@@ -250,10 +250,15 @@ class Aid():
         thing = pyautogui.locateOnScreen(image, confidence=confidence)
         if thing is None:
             return False
+        hits = 0
         while thing is not None:
-            goClick(pyautogui.center(thing))
+            pos = pyautogui.center(thing)
+            goClick(pos)
             time.sleep(0.05)
             thing = pyautogui.locateOnScreen(image, confidence=confidence)
+            hits += 1
+            if hits > 7:
+                findClick("Page step right.png")
         return True
 
 
@@ -275,9 +280,7 @@ class Aid():
 # The while is until the end of the list of people is reached
             loop = True
             while loop:
-                locations = pyautogui.locateAllOnScreen(self.aidimage,
-                                                        confidence=0.9)
-                Aided = FindGoClickAll(self.aidimage)
+                Aided = self.AidClickAll(self.aidimage)
 
                 if place == "Friend":
                     FindGoClickAll(self.tavernVisitimage, confidence=0.95)
