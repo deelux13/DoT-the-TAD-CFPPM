@@ -11,6 +11,17 @@ import multiprocessing
 import time
 import sys
 from pynput.keyboard import Key, Listener
+from functools import wraps
+
+def Wrap(self, func, args=()):
+    @wraps(func)
+    def inner():
+        try:
+            func(args)
+        except:
+            raise LZException("Threader target error i think")
+        self.__exit__()
+    return inner
 
 class Threader():
     """Makes a new thread to listen for a double esc and stops thread
@@ -24,10 +35,15 @@ class Threader():
         print("threader init")
         if self.Running[0] > 0:
             raise AlreadyExisting("Threader has already been instanced")
+            ## TODO do i care? cuz these are like individual modules
         self.Running[0] = 1
 
     def __enter__(self):
         return self
+
+
+
+
 
 
     def addThread(self, Thread):
@@ -36,14 +52,32 @@ class Threader():
         self.Threads.append(Thread)
 
 
-    def Trigger(self, target, args=None):
+    def Trigger(self, target, args=()):
+        """Runs a callable with a key listener for esc x2 to exit
+
+
+        Parameters
+        ----------
+        target : Callable
+            to be run.
+        args : tuple, optional
+            args for the callable. The default is ().
+
+        Returns
+        -------
+        None.
+
+        """
+
+
         print("Threader trigger cent")
         print("target = ", target)
+        wrapped =  Wrap(self, target, args)
         # I feel like the central process MAYBE could use a with.. but idk
-        CentralProcess = multiprocessing.Process(target=target, daemon=True)
+        CentralProcess = multiprocessing.Process(target=wrapped , daemon=True)
         self.addThread(CentralProcess)
-        Int = Interrupt(CentralProcess)
-        Int.Listen()
+        self.Listener = Interrupt(CentralProcess)
+        self.Listener.Listen()
 
 
 
@@ -53,6 +87,7 @@ class Threader():
         self.Running[0] = 0
         for thing in self.Threads:
             thing.terminate()
+        self.Listener.Stop()
 
 
 
@@ -85,7 +120,7 @@ class Interrupt():
     def Stop(self):
         self.listener.stop()
         self.Running = False
-        self.Thread.stop()
+
 
 
 
