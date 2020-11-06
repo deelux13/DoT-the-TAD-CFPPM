@@ -7,32 +7,38 @@ Created on Thu Oct 22 21:12:16 2020
 
 
 import pyautogui
-import multiprocessing
+from multiprocessing import Process
 import time
 import sys
 from pynput.keyboard import Key, Listener
 from functools import wraps
 
-def Wrap(self, func, args=()):
+def Wrap(self, func):
     @wraps(func)
     def inner():
         try:
-            func(args)
+            func()
         except:
             raise LZException("Threader target error i think")
         self.__exit__()
     return inner
 
+
+class LZprocess(Process):
+    def __init__(self):
+        super(LZprocess, self).__init__()
+
+
 class Threader():
-    """Makes a new thread to listen for a double esc and stops thread
+    """Makes a new Process to listen for a double esc and stops Process
 
     """
     Running = [0]
-    Threads = []
+    Processes = []
     Interrupts = []
 
     def __init__(self):
-        print("threader init")
+        print("Processer init")
         if self.Running[0] > 0:
             raise AlreadyExisting("Threader has already been instanced")
             ## TODO do i care? cuz these are like individual modules
@@ -46,10 +52,10 @@ class Threader():
 
 
 
-    def addThread(self, Thread):
-        print("Threader add thread")
-        Thread.start()
-        self.Threads.append(Thread)
+    def addProcess(self, Process):
+        print("Processer add Process")
+        Process.start()
+        self.Processes.append(Process)
 
 
     def Trigger(self, target, args=()):
@@ -58,7 +64,7 @@ class Threader():
 
         Parameters
         ----------
-        target : Callable
+        target : Process object
             to be run.
         args : tuple, optional
             args for the callable. The default is ().
@@ -70,31 +76,50 @@ class Threader():
         """
 
 
-        print("Threader trigger cent")
+        print("Processer trigger cent")
         print("target = ", target)
         wrapped =  Wrap(self, target, args)
         # I feel like the central process MAYBE could use a with.. but idk
-        CentralProcess = multiprocessing.Process(target=wrapped , daemon=True)
-        self.addThread(CentralProcess)
-        self.Listener = Interrupt(CentralProcess)
-        self.Listener.Listen()
+        CentralProcess = target
+        self.addProcess(CentralProcess)
+        self.Listener = Interrupt(self)
+        self.Listener.start()
+
+    def stop(self):
+        self.__exit__()
 
 
 
 
     def __exit__(self, problem, value, trace):
-        print('Threader problem LZ', problem)
+        print('Processer problem LZ', problem)
         self.Running[0] = 0
-        for thing in self.Threads:
+        for thing in self.Processes:
             thing.terminate()
         self.Listener.Stop()
 
 
 
-class Interrupt():
-    def __init__(self, target):
+class Interrupt(Process):
+    def __init__(self, Processer):
+        """Needs the Parent Processere object, will call Processer.stop
+
+        Parameters
+        ----------
+        target : TYPE
+            DESCRIPTION.
+        Processer : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
+        super(Interrupt, self).__init__()
         self.prevKey = Key.enter
-        self.target = target
+
+        self.Processer = Processer
 
     def keyUp(self, key):
         print(key)
@@ -104,11 +129,11 @@ class Interrupt():
             print("aborting")
             self.listener.stop()
             self.Running = False
-            self.target.terminate()
+            self.Processer.stop()
 # TODO use target.is_alive()
         self.prevKey = key
 
-    def Listen(self):
+    def runn(self):
         print("Interrupt Start Listen()")
 
         with Listener(on_release=self.keyUp) as self.listener:
@@ -272,12 +297,14 @@ def goClick(pos):
 
 
 
-class Aid():
-    def __init__(self):
+class Aid(Process):
+    def __init__(self, Hood='No'):
+        super(Aid, self).__init__()
         self.moveLeftallimage = "Skip left arrow.png"
         self.moveRightpageimage = "Page right arrow.png"
         self.aidimage = "Aid button.png"
         self.tavernVisitimage = "Visit Tavern.png"
+        self.Hood = Hood
         # these are not all of the images used...
 
 
@@ -297,10 +324,10 @@ class Aid():
         return True
 
 
-    def go(self, Hood='No'):
-        if Hood == 'No':
+    def run(self):
+        if self.Hood == 'No':
             tabs = ["Guild", "Friend"]
-        elif Hood == 'Yes':
+        elif self.Hood == 'Yes':
             tabs = ["Hood", "Guild", "Friend"]
         else:
             raise LZException("Aid.Go improper hood arg")
@@ -361,7 +388,7 @@ class Aid():
                         loop = False
 
 
-class collect():
+class collect(Process):
     def __init__(self):
         self.coinImg = "coin to collect.png"
         self.coinStarImg = "coin to collect motivated.png"

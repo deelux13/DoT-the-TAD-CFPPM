@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import attemptV4 as LZ
+import Threader as THd
 
 def main():
     #if __name__ == "__main__":
-        with LZ.Threader() as thd:
+        with THd.Threader() as thd:
             thd.Trigger(LZ.CentralProcessLZ)
 
 
@@ -31,3 +31,4 @@ def UBQz():
     LZ.UBQ().go(ubqs)
     if collect == 'Yes':
         main()
+
