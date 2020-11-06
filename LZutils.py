@@ -6,6 +6,8 @@ Created on Fri Nov  6 10:01:26 2020
 """
 
 import pyautogui
+import time
+import ErrorLZ
 
 
 def swapVariables(a,b):
@@ -56,11 +58,11 @@ def pullImage():
     print("\'",  "\'")
     if name is None:
         print("cancelled")
-        raise LZException("Pull image aborted.")
+        raise ErrorLZ.LZException("Pull image aborted.")
     name = name + ".png"
     if name.startswith('.'):
         print("Empty input")
-        raise LZException("No name inputted.")
+        raise ErrorLZ.LZException("No name inputted.")
 
     print(region)
     time.sleep(.02)
@@ -107,7 +109,7 @@ def RestartProductions():
         time.sleep(0.5)
         try:
             findClick("5 min production.png")
-        except LZException:
+        except ErrorLZ.LZException:
             print("5 min not there")
         time.sleep(1.5)
         thing = pyautogui.locateOnScreen("building sleeping.png", confidence=0.5)
@@ -119,7 +121,7 @@ def RestartProductions():
 def findClick(image, confidence=.9, offset=(0,0)):
     rect = pyautogui.locateOnScreen(image, confidence=confidence)
     if rect == None:
-        raise LZException("'{}' Not found on screen".format(image))
+        raise ErrorLZ.LZException("'{}' Not found on screen".format(image))
     pos = pyautogui.center(rect)
     pos = pos + offset
     pyautogui.moveTo(pos, None, 0.3, pyautogui.easeInOutQuad)

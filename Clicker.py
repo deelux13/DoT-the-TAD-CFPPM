@@ -7,6 +7,9 @@ Created on Fri Nov  6 09:56:44 2020
 
 import pyautogui
 from multiprocessing import Process
+import LZutils
+import time
+import ErrorLZ
 
 
 class ClickerProcess(Process):
@@ -14,54 +17,73 @@ class ClickerProcess(Process):
     the menu too."""
 
     def __init__(self):
-        pass
-
-
-
-
-"""
-
-class Aid(Process):
-    def __init__(self, Hood='No'):
-        super(Aid, self).__init__()
+        super(ClickerProcess, self).__init__()
         self.moveLeftallimage = "Skip left arrow.png"
         self.moveRightpageimage = "Page right arrow.png"
         self.aidimage = "Aid button.png"
         self.tavernVisitimage = "Visit Tavern.png"
-        self.Hood = Hood
-        # these are not all of the images used...
+        self.Hood()
+        self.coinImg = "coin to collect.png"
+        self.coinStarImg = "coin to collect motivated.png"
+        self.suppliesImg = "Supply collect.png"
+        self.buildingSleepImg = "building sleeping.png"
+        self.min5Production = "5 min production.png"
+        self.suppliesStarImg = "supplies motivated.png"
+        self.collections = [self.coinImg, self.coinStarImg,
+                            self.suppliesImg, self.suppliesStarImg]
+        self.QuestOpenImg = "Story quest.png"
+        self.collect = "Collect button.png"
+        self.payImg = "Pay button.png"
+        self.UBQImg = "UBQ identify.png"
+        self.abortImg = "Abort button.png"
+        self.UBQask()
+
+    def UBQask(self):
+        pyautogui.alert(text='Really go fix the UBQask')
+        self.UBQtodo = 0
+        test = True
+
+        while test:
+            ubqs = pyautogui.prompt(text='How many UBQs?')
+            if ubqs is None:
+                test = False
+                break
+            try:
+                self.UBQtodo = int(ubqs)
+                test = False
+            except ValueError:
+                pyautogui.alert(text="Not a number")
+
+    def Hood(self):
+        """"Pull yes/no for hood aid and populate aidtab list"""
+        pyautogui.alert(text='Seriously go do the logic for Hood init')
 
 
-    def AidClickAll(image, confidence=0.9):
+    def AidClickAll(self, image, confidence=0.9):
         thing = pyautogui.locateOnScreen(image, confidence=confidence)
         if thing is None:
             return False
         hits = 0
         while thing is not None:
             pos = pyautogui.center(thing)
-            goClick(pos)
+            LZutils.goClick(pos)
             time.sleep(0.05)
             thing = pyautogui.locateOnScreen(image, confidence=confidence)
             hits += 1
             if hits > 7:
-                findClick("Page step right.png")
+                LZutils.findClick("Page step right.png")
         return True
 
 
-    def run(self):
-        if self.Hood == 'No':
-            tabs = ["Guild", "Friend"]
-        elif self.Hood == 'Yes':
-            tabs = ["Hood", "Guild", "Friend"]
-        else:
-            raise LZException("Aid.Go improper hood arg")
+
+    def Aid(self):
 
 
 
-        for place in tabs:  # this is the loop that goes over each tab
-            findClick("{} tab.png".format(place), confidence=0.9)
+        for place in self.tabs:  # this is the loop that goes over each tab
+            LZutils.findClick("{} tab.png".format(place), confidence=0.9)
             time.sleep(1)
-            findClick(self.moveLeftallimage)
+            LZutils.findClick(self.moveLeftallimage)
             time.sleep(1)
 # The while is until the end of the list of people is reached
             loop = True
@@ -69,8 +91,8 @@ class Aid(Process):
                 Aided = self.AidClickAll(self.aidimage)
 
                 if place == "Friend":
-                    FindGoClickAll(self.tavernVisitimage, confidence=0.95)
-# TODO need some sort of timeout for the Failed to Aid problem...
+                    LZutils.FindGoClickAll(self.tavernVisitimage, confidence=0.95)
+
 
 
                 edge = pyautogui.locateOnScreen(
@@ -79,7 +101,7 @@ class Aid(Process):
                     'Right edge of player aid board.png', confidence=0.85)
                 # edge of top left in 10 down 5, to end
                 if edge is None or end is None:
-                    raise LZException("Aid board is not on screen")
+                    raise ErrorLZ.LZException("Aid board is not on screen")
 
 
 
@@ -88,16 +110,17 @@ class Aid(Process):
 
                 im = pyautogui.screenshot(imageFilename='tempAidcheck.png',
                                           region=Checkregion)
-                findClick(self.moveRightpageimage)
+                LZutils.findClick(self.moveRightpageimage)
                 time.sleep(1)
+                # TODO thses folowing iffs are useless since the failed aid logic is in the ClickAll
                 if pyautogui.locateOnScreen("Visit Not Possible.png",
                                         confidence=0.85) is not None:
 
-                    goClick("No Visit Okay button.png")
+                    LZutils.goClick("No Visit Okay button.png")
 
                 if pyautogui.locateOnScreen(
                                         "Failed polish.png", confidence=0.85) is not None:
-                    goClick("No Visot Okay button.png")
+                    LZutils.goClick("No Visit Okay button.png")
 
 
                 if not Aided:
@@ -112,81 +135,80 @@ class Aid(Process):
                         loop = False
 
 
-class collect(Process):
-    def __init__(self):
-        self.coinImg = "coin to collect.png"
-        self.coinStarImg = "coin to collect motivated.png"
-        self.suppliesImg = "Supply collect.png"
-        self.buildingSleepImg = "building sleeping.png"
-        self.min5Production = "5 min production.png"
-        self.suppliesStarImg = "supplies motivated.png"
-        self.collections = [self.coinImg, self.coinStarImg,
-                            self.suppliesImg, self.suppliesStarImg]
-
-    def Go(self):
+    def Collect(self):
         time.sleep(3)
         print("start")
         i = 0
         while i < 2:
             for Img in self.collections:
-                FindGoCollectAll(Img, confidence=0.57)
+                LZutils.FindGoCollectAll(Img, confidence=0.57)
                 time.sleep(1)
             time.sleep(5)
-            RestartProductions()
+            LZutils.RestartProductions()
             i += 1
 
 
-class UBQ():
-    def __init__(self):
-        self.QuestOpenImg = "Story quest.png"
-        self.collect = "Collect button.png"
-        self.payImg = "Pay button.png"
-        self.UBQImg = "UBQ identify.png"
-        self.abortImg = "Abort button.png"
 
+    def UBQ(self):
+        print(self.UBQtodo)
+        # DO i need to check that UBQtodo is a valid input? meh
 
-    def go(self, loops):
-        print(loops)
-        if loops is None:
-            return False
+        LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5))
 
-        findClick(self.QuestOpenImg, 0.6, (0,-5))
-        i = 0
-        while i < loops:
+        while self.UBQtodo > 0:
             time.sleep(1)
             if pyautogui.locateOnScreen(self.UBQImg, confidence=0.8, minSearchTime=1) is not None:
-                FindGoClickAll(self.payImg)
+                LZutils.FindGoClickAll(self.payImg)
                 time.sleep(1)
-                findClick(self.collect, confidence=0.7)
-                i += 1
+                LZutils.findClick(self.collect, confidence=0.7)
+                self.UBQtodo -= 1
             else:
                 time.sleep(1)
-                findClick(self.abortImg)
-
-def CentralProcessLZ():
+                LZutils.findClick(self.abortImg)
 
 
-        print("central Main")
-        #pyautogui.alert("Starting")
+
+    def run(self):
+
+
+        print("Clicker process run")
+        pyautogui.alert("Starting")
         timeLoop = 0
+        self.UBQ()
+        # runs however many ubqs were told in __INIT__
 
         while True:
-            collect().Go()
+            self.Collect()
             if timeLoop % 13 == 0:
                 try:
-                    Aid().go()
-                except LZException:
+                    self.Aid()
+                except ErrorLZ.LZException:
                     timeLoop -= 1
 
 
             ready = True
             while ready:
-                time.sleep(10)
+                time.sleep(15)
                 if pyautogui.locateOnScreen("coin to collect.png", confidence=0.6) is not None or pyautogui.locateOnScreen("Supply collect.png", confidence=0.6) is not None:
                     ready = False
 
             timeLoop += 1
             time.sleep(15)
+
+
+"""
+
+
+
+
+
+
+
+
+
+class UBQ():
+    def __init__(self):
+
 
 # thiss  just needs to be somewhere else so i can import everything from this file and then multiprocessing might work
 

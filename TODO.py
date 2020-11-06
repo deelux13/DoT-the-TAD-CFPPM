@@ -10,6 +10,13 @@ TODO
 
 1 Threader wrapper to kill listener on error or task finished
 
-aid not possible exception
+comment stuff
 
+"""
+
+"""
+TO DONE
+
+
+aid not possible exception
 """
