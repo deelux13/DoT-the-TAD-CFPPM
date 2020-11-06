@@ -37,9 +37,11 @@ class ClickerProcess(Process):
         self.UBQImg = "UBQ identify2.png"
         self.abortImg = "Abort button.png"
         self.UBQask()
+        self.supQuestImg = "Supplies quest identify.png"
+        self.coinQuestImg = "Coin quest identify.png"
 
     def UBQask(self):
-        pyautogui.alert(text='Really go fix the UBQask')
+
         self.UBQtodo = 0
         test = True
 
@@ -53,10 +55,14 @@ class ClickerProcess(Process):
                 test = False
             except ValueError:
                 pyautogui.alert(text="Not a number")
+        self.UBQgivers = 1
+        self.UBQgivers = pyautogui.confirm(text='How many quest givers?',buttons=['1', '2', '3'])
 
     def Hood(self):
         """"Pull yes/no for hood aid and populate aidtab list"""
-        pyautogui.alert(text='Seriously go do the logic for Hood init')
+        pyautogui.alert(text='Hood will not be aided')
+        self.tabs = ["Guild", "Friend"]
+        # not sure how to add hood option, don't want it to accidentally trigger for DoT
 
 
     def AidClickAll(self, image, confidence=0.9):
@@ -148,6 +154,49 @@ class ClickerProcess(Process):
             i += 1
 
 
+    def UBQsetup(self):
+        """
+        This is very much not set up to do 2 quests, but this is the harder implementation.
+
+        Returns
+        -------
+        None.
+
+        """
+        LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5))
+        times = self.UBQgivers - 1
+        spots = [self.supQuestImg, self. coinQuestImg]
+        if times == 0:
+            return
+        # start of locking in the 1st supplies quest
+        LZutils.findAndMove(self.abortImg)
+        pyautogui.scroll(10000)
+        aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.7)
+        check = None
+        while check is None:
+            """
+            # get the first on on the screen
+            # i figure i'm missing something, but i'm assuming that we don't have one of them in the bottom slot
+            it shouldnt be normally, since we normally just finished a UBQ in the bottom slot
+            """
+            check = pyautogui.locateOnScreen(self.supQuestImg)
+            if check is None:
+                check = pyautogui.locateOnScreen(self.coinQuestImg)
+            if check is None:
+                LZutils.findClick(self.abortImg, confidence=0.7)
+            time.sleep(0.3)
+        #now we have one onscreen v vb
+        if pyautogui.center(check)[1] > pyautogui.center(pyautogui.locateOnScreen(self.abortImg, confidence=0.7))[1]:
+            #then the bottom RQ is one we want, and we just abotrt the top
+            LZutils.findClick(self.abortImg, confidence=0.7)
+        # now the top one is the one we want
+        while true:
+            if pyautogui.locateOnScreen(self.supQuestImg, confidence=0.7) and pyautogui.locateOnScreen(self.coinQuestImg, confidence=0.7):
+                pyautogui.scroll(-1100)
+                return
+            pyautogui.locateAllOnScreen(self.abortImg, confidence=0.7)
+
+
 
     def UBQ(self):
         print(self.UBQtodo)
@@ -160,7 +209,9 @@ class ClickerProcess(Process):
             if pyautogui.locateOnScreen(self.UBQImg, confidence=0.6, minSearchTime=2) is not None:
                 LZutils.FindGoClickAll(self.payImg)
                 time.sleep(1)
-                LZutils.findClick(self.collect, confidence=0.7)
+                found = LZutils.findGoClickAll(self.collect, confidence=0.7)
+                if found > 1:
+                    self.UBQsetup()
                 self.UBQtodo -= 1
             else:
                 time.sleep(1)
@@ -182,30 +233,26 @@ class ClickerProcess(Process):
         except ErrorLZ.LZException:
             pass # should make this be the not found error but didn't go dig to find it
 
-        while True:
-            time.sleep(5)
-            out = pyautogui.alert(text='testing')
-            if out is None:
-                return
+
         # runs however many ubqs were told in __INIT__
 
-        # while True:
-        #     self.Collect()
-        #     if timeLoop % 13 == 0:
-        #         try:
-        #             self.Aid()
-        #         except ErrorLZ.LZException:
-        #             timeLoop -= 1
+        while True:
+            self.Collect()
+            if timeLoop % 13 == 0:
+                try:
+                    self.Aid()
+                except ErrorLZ.LZException:
+                    timeLoop -= 1
 
 
-        #     ready = True
-        #     while ready:
-        #         time.sleep(15)
-        #         if pyautogui.locateOnScreen("coin to collect.png", confidence=0.6) is not None or pyautogui.locateOnScreen("Supply collect.png", confidence=0.6) is not None:
-        #             ready = False
+            ready = True
+            while ready:
+                time.sleep(15)
+                if pyautogui.locateOnScreen("coin to collect.png", confidence=0.6) is not None or pyautogui.locateOnScreen("Supply collect.png", confidence=0.6) is not None:
+                    ready = False
 
-        #     timeLoop += 1
-        #     time.sleep(15)
+            timeLoop += 1
+            time.sleep(15)
 
 
 """

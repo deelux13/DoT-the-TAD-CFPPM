@@ -78,10 +78,13 @@ def FindGoClickAll(image, confidence=0.9):
     thing = pyautogui.locateOnScreen(image, confidence=confidence)
     if thing is None:
         return False
+    found = 0
     while thing is not None:
         goClick(pyautogui.center(thing))
         time.sleep(0.05)
         thing = pyautogui.locateOnScreen(image, confidence=confidence)
+        found += 1
+
     return True
 
 
