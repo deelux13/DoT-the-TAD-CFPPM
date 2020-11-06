@@ -177,7 +177,16 @@ class ClickerProcess(Process):
         print("Clicker process run")
         pyautogui.alert("Starting")
         timeLoop = 0
-        self.UBQ()
+        try:
+            self.UBQ()
+        except ErrorLZ.LZException:
+            pass # should make this be the not found error but didn't go dig to find it
+
+        while True:
+            time.sleep(5)
+            out = pyautogui.alert(text='testing')
+            if out is None:
+                return
         # runs however many ubqs were told in __INIT__
 
         # while True:

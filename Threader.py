@@ -83,13 +83,18 @@ class Threader():
 
         print("Processer trigger cent")
         print("target = ", target)
+
         # I feel like the central process MAYBE could use a with.. but idk
         CentralProcess = target
         self.addProcess(CentralProcess)
-        self.Listener.start()
+        print("addprocess call completed")
+        self.Listener.run()
+        # self.Listener.join()
+        # this is not needed if run is called, but then the main thread is locked to the listener. don't think i mind
+        print("listener started")
 
     def stop(self):
-        self.__exit__("Stopped by self.Stop()")
+        self.__exit__("Stopped by self.Stop()", "fake", "fake")
         # feels like a hack to keep exit in the main call from killing the threads
 
 
@@ -129,6 +134,9 @@ class Interrupt(Process):
     def keyUp(self, key):
         print(key)
         # pyautogui.move(100,100)
+        if key == Key.enter:
+            pyautogui.alert(text='running, enter was pressed')
+
 
         if key == Key.esc and key == self.prevKey:
             print("aborting")
