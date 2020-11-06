@@ -34,7 +34,7 @@ class ClickerProcess(Process):
         self.QuestOpenImg = "Story quest.png"
         self.collect = "Collect button.png"
         self.payImg = "Pay button.png"
-        self.UBQImg = "UBQ identify.png"
+        self.UBQImg = "UBQ identify2.png"
         self.abortImg = "Abort button.png"
         self.UBQask()
 
