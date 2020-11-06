@@ -157,14 +157,17 @@ class ClickerProcess(Process):
 
         while self.UBQtodo > 0:
             time.sleep(1)
-            if pyautogui.locateOnScreen(self.UBQImg, confidence=0.8, minSearchTime=1) is not None:
+            if pyautogui.locateOnScreen(self.UBQImg, confidence=0.6, minSearchTime=2) is not None:
                 LZutils.FindGoClickAll(self.payImg)
                 time.sleep(1)
                 LZutils.findClick(self.collect, confidence=0.7)
                 self.UBQtodo -= 1
             else:
                 time.sleep(1)
-                LZutils.findClick(self.abortImg)
+                try:
+                    LZutils.findClick(self.abortImg)
+                except ErrorLZ.LZException:
+                    break
 
 
 
@@ -177,23 +180,23 @@ class ClickerProcess(Process):
         self.UBQ()
         # runs however many ubqs were told in __INIT__
 
-        while True:
-            self.Collect()
-            if timeLoop % 13 == 0:
-                try:
-                    self.Aid()
-                except ErrorLZ.LZException:
-                    timeLoop -= 1
+        # while True:
+        #     self.Collect()
+        #     if timeLoop % 13 == 0:
+        #         try:
+        #             self.Aid()
+        #         except ErrorLZ.LZException:
+        #             timeLoop -= 1
 
 
-            ready = True
-            while ready:
-                time.sleep(15)
-                if pyautogui.locateOnScreen("coin to collect.png", confidence=0.6) is not None or pyautogui.locateOnScreen("Supply collect.png", confidence=0.6) is not None:
-                    ready = False
+        #     ready = True
+        #     while ready:
+        #         time.sleep(15)
+        #         if pyautogui.locateOnScreen("coin to collect.png", confidence=0.6) is not None or pyautogui.locateOnScreen("Supply collect.png", confidence=0.6) is not None:
+        #             ready = False
 
-            timeLoop += 1
-            time.sleep(15)
+        #     timeLoop += 1
+        #     time.sleep(15)
 
 
 """

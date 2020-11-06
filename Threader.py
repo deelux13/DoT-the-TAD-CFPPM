@@ -12,6 +12,7 @@ import time
 import sys
 from pynput.keyboard import Key, Listener
 from functools import wraps
+import ErrorLZ
 
 # def Wrap(self, func):
 #     @wraps(func)
@@ -40,9 +41,12 @@ class Threader():
     def __init__(self):
         print("Processer init")
         if self.Running[0] > 0:
-            raise AlreadyExisting("Threader has already been instanced")
+            raise ErrorLZ.AlreadyExisting("Threader has already been instanced")
             ## TODO do i care? cuz these are like individual modules
         self.Running[0] = 1
+
+        self.Listener = Interrupt(self)
+        # in _init so that errors don't kill it as hard?.. also only need one listener.
 
     def __enter__(self):
         return self
@@ -55,10 +59,11 @@ class Threader():
     def addProcess(self, Process):
         print("Processer add Process")
         Process.start()
+        print('Process started')
         self.Processes.append(Process)
 
 
-    def Trigger(self, target, args=()):
+    def Trigger(self, target):
         """Runs a callable with a key listener for esc x2 to exit
 
 
@@ -78,25 +83,25 @@ class Threader():
 
         print("Processer trigger cent")
         print("target = ", target)
-        wrapped =  Wrap(self, target, args)
         # I feel like the central process MAYBE could use a with.. but idk
         CentralProcess = target
         self.addProcess(CentralProcess)
-        self.Listener = Interrupt(self)
         self.Listener.start()
 
     def stop(self):
-        self.__exit__()
+        self.__exit__("Stopped by self.Stop()")
+        # feels like a hack to keep exit in the main call from killing the threads
 
 
 
 
     def __exit__(self, problem, value, trace):
         print('Processer problem LZ', problem)
-        self.Running[0] = 0
-        for thing in self.Processes:
-            thing.terminate()
-        self.Listener.Stop()
+        if problem is not None:
+            self.Running[0] = 0
+            for thing in self.Processes:
+                thing.terminate()
+            self.Listener.Stop()
 
 
 
@@ -133,7 +138,7 @@ class Interrupt(Process):
 # TODO use target.is_alive()
         self.prevKey = key
 
-    def runn(self):
+    def run(self):
         print("Interrupt Start Listen()")
 
         with Listener(on_release=self.keyUp) as self.listener:
