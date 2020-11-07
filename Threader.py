@@ -134,8 +134,8 @@ class Interrupt(Process):
     def keyUp(self, key):
         print(key)
         # pyautogui.move(100,100)
-        if key == Key.enter:
-            pyautogui.alert(text='running, enter was pressed')
+        # if key == Key.enter:
+        #     pyautogui.alert(text='running, enter was pressed')
 
 
         if key == Key.esc and key == self.prevKey:
