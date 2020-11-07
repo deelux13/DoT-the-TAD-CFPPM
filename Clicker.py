@@ -62,7 +62,7 @@ class ClickerProcess(Process):
         """"Pull yes/no for hood aid and populate aidtab list"""
         pyautogui.alert(text='Hood will not be aided')
         self.tabs = ["Guild", "Friend"]
-        if pyautogui.prompt(text='Do you want to aid the available aids in your hood? type "YES"') == 'YES':
+        if pyautogui.prompt(text='Do you want to aid the available aids in your hood? type "YES" only if you\'re done being the TAD') == 'YES':
             self.tabs.append("Hood")
         # not sure how to add hood option, don't want it to accidentally trigger for DoT
 
@@ -225,10 +225,20 @@ class ClickerProcess(Process):
             if pyautogui.locateOnScreen(self.UBQImg, confidence=0.6, minSearchTime=2) is not None:
                 LZutils.FindGoClickAll(self.payImg)
                 time.sleep(1)
-                found = LZutils.findGoClickAll(self.collect, confidence=0.7)
-                if found > 1:
-                    self.UBQsetup()
+                i = 1
+                while i >= 0:
+
+                    found = LZutils.findGoClickAll(self.collect,
+                                                   confidence=0.7)
+                    if found > i:
+                        time.sleep(0.3)
+                        self.UBQsetup()
+                        break
+                    i -= 1
+                    pyautogui.scroll(1000)
+
                 self.UBQtodo -= 1
+                pyautogui.scroll(-1000)
             else:
                 time.sleep(1)
                 try:
