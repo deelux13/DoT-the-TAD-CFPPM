@@ -62,10 +62,12 @@ class ClickerProcess(Process):
         """"Pull yes/no for hood aid and populate aidtab list"""
         pyautogui.alert(text='Hood will not be aided')
         self.tabs = ["Guild", "Friend"]
+        if pyautogui.prompt(text='Do you want to aid the available aids in your hood? type "YES"') == 'YES':
+            self.tabs.append("Hood")
         # not sure how to add hood option, don't want it to accidentally trigger for DoT
 
-
     def AidClickAll(self, image, confidence=0.9):
+        """Clicking routine for the Aid method."""
         thing = pyautogui.locateOnScreen(image, confidence=confidence)
         if thing is None:
             return False
@@ -80,12 +82,8 @@ class ClickerProcess(Process):
                 LZutils.findClick("Page step right.png")
         return True
 
-
-
     def Aid(self):
-
-
-
+        """Go aid everyone you want to."""
         for place in self.tabs:  # this is the loop that goes over each tab
             LZutils.findClick("{} tab.png".format(place), confidence=0.9)
             time.sleep(1)
@@ -97,9 +95,8 @@ class ClickerProcess(Process):
                 Aided = self.AidClickAll(self.aidimage)
 
                 if place == "Friend":
-                    LZutils.FindGoClickAll(self.tavernVisitimage, confidence=0.95)
-
-
+                    LZutils.FindGoClickAll(self.tavernVisitimage,
+                                           confidence=0.95)
 
                 edge = pyautogui.locateOnScreen(
                     'left edge of player aid board.png', confidence=0.85)
@@ -109,8 +106,6 @@ class ClickerProcess(Process):
                 if edge is None or end is None:
                     raise ErrorLZ.LZException("Aid board is not on screen")
 
-
-
                 Checkregion = (edge[0]+10, edge[1]+5,
                                end[0], end[1]+end[3]-5-edge[1])
 
@@ -118,30 +113,36 @@ class ClickerProcess(Process):
                                           region=Checkregion)
                 LZutils.findClick(self.moveRightpageimage)
                 time.sleep(1)
-                # TODO thses folowing iffs are useless since the failed aid logic is in the ClickAll
+                # TODO thses folowing iffs are useless since the failed aid
+                # logic is in the ClickAll
                 if pyautogui.locateOnScreen("Visit Not Possible.png",
-                                        confidence=0.85) is not None:
+                                            confidence=0.85) is not None:
 
                     LZutils.goClick("No Visit Okay button.png")
 
-                if pyautogui.locateOnScreen(
-                                        "Failed polish.png", confidence=0.85) is not None:
+                if pyautogui.locateOnScreen("Failed polish.png",
+                                            confidence=0.85) is not None:
                     LZutils.goClick("No Visit Okay button.png")
-
 
                 if not Aided:
 
                     testerDat = pyautogui.locateOnScreen(im,
-                                                 confidence=0.95)
+                                                         confidence=0.95)
                     time.sleep(1)
-                        # Cuz if we find the same shot, the end of the list
-                        # has been reached and it hasn't scrolled
-                        # Crap what about
-                    if testerDat != None:
+                    # Cuz if we find the same shot, the end of the list
+                    # has been reached and it hasn't scrolled
+                    # Crap what about
+                    if testerDat is not None:
                         loop = False
 
-
     def Collect(self):
+        """Grab all the finished coins and supplies, then reset productions.
+
+        Returns
+        -------
+        None.
+
+        """
         time.sleep(3)
         print("start")
         i = 0
@@ -153,17 +154,18 @@ class ClickerProcess(Process):
             LZutils.RestartProductions()
             i += 1
 
-
     def UBQsetup(self):
-        """
-        This is very much not set up to do 2 quests, but this is the harder implementation.
+        """Put the supply and coin gather quests at the top.
+
+        This is very much not set up to do 2 quests, but this is the harder
+        implementation.The other one can be added via some copypasta.
 
         Returns
         -------
         None.
 
         """
-        LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5))
+        LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))
         times = self.UBQgivers - 1
         spots = [self.supQuestImg, self. coinQuestImg]
         if times == 0:
@@ -176,8 +178,9 @@ class ClickerProcess(Process):
         while check is None:
             """
             # get the first on on the screen
-            # i figure i'm missing something, but i'm assuming that we don't have one of them in the bottom slot
-            it shouldnt be normally, since we normally just finished a UBQ in the bottom slot
+            # i figure i'm missing something, but i'm assuming that we don't
+            have one of them in the bottom slot it shouldnt be normally, since
+            we normally just finished a UBQ in the bottom slot
             """
             check = pyautogui.locateOnScreen(self.supQuestImg)
             if check is None:
@@ -189,12 +192,25 @@ class ClickerProcess(Process):
         if pyautogui.center(check)[1] > pyautogui.center(pyautogui.locateOnScreen(self.abortImg, confidence=0.7))[1]:
             #then the bottom RQ is one we want, and we just abotrt the top
             LZutils.findClick(self.abortImg, confidence=0.7)
+            time.sleep(0.3)
         # now the top one is the one we want
-        while true:
+        i = 0
+        while i < 100:
             if pyautogui.locateOnScreen(self.supQuestImg, confidence=0.7) and pyautogui.locateOnScreen(self.coinQuestImg, confidence=0.7):
                 pyautogui.scroll(-1100)
                 return
-            pyautogui.locateAllOnScreen(self.abortImg, confidence=0.7)
+            aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.7)
+            j = 0
+            while j < 2 :
+                spot = next(aborts)
+                j += 1
+
+            LZutils.goClick(pyautogui.center(spot))
+            time.sleep(0.3)
+
+
+            i += 1
+        raise ErrorLZ.LZException("Two quests not found")
 
 
 
@@ -231,8 +247,8 @@ class ClickerProcess(Process):
         try:
             self.UBQ()
         except ErrorLZ.LZException:
-            pass # should make this be the not found error but didn't go dig to find it
-
+            pass
+        # should make this be the not found error but didn't go dig to find it
 
         # runs however many ubqs were told in __INIT__
 
