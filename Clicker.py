@@ -75,11 +75,12 @@ class ClickerProcess(Process):
         while thing is not None:
             pos = pyautogui.center(thing)
             LZutils.goClick(pos)
-            time.sleep(0.05)
-            thing = pyautogui.locateOnScreen(image, confidence=confidence)
+            time.sleep(0.8)
             hits += 1
             if hits > 7:
                 LZutils.findClick("Page step right.png")
+            thing = pyautogui.locateOnScreen(image, confidence=confidence)
+            # last thing in the loop is to prep it for next loop
         return True
 
     def Aid(self):
@@ -228,7 +229,7 @@ class ClickerProcess(Process):
                 i = 1
                 while i >= 0:
 
-                    found = LZutils.findGoClickAll(self.collect,
+                    found = LZutils.FindGoClickAll(self.collect,
                                                    confidence=0.7)
                     if found > i:
                         time.sleep(0.3)
