@@ -74,14 +74,14 @@ class building():
     pass
 
 
-def FindGoClickAll(image, confidence=0.9):
+def FindGoClickAll(image, confidence=0.9, delay=0.1):
     thing = pyautogui.locateOnScreen(image, confidence=confidence)
     if thing is None:
         return False
     found = 0
     while thing is not None:
         goClick(pyautogui.center(thing))
-        time.sleep(0.05)
+        time.sleep(delay)
         thing = pyautogui.locateOnScreen(image, confidence=confidence)
         found += 1
 

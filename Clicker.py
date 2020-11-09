@@ -55,8 +55,10 @@ class ClickerProcess(Process):
                 test = False
             except ValueError:
                 pyautogui.alert(text="Not a number")
-        self.UBQgivers = 1
-        self.UBQgivers = pyautogui.confirm(text='How many quest givers?',buttons=['1', '2', '3'])
+
+        self.UBQgivers = int(pyautogui.confirm(text='How many quest givers?',buttons=['1', '2', '3']))
+        if self.UBQgivers == 2:
+            pyautogui.alert(test='2 givers not actually supported...yet...')
 
     def Hood(self):
         """"Pull yes/no for hood aid and populate aidtab list"""
@@ -97,7 +99,7 @@ class ClickerProcess(Process):
 
                 if place == "Friend":
                     LZutils.FindGoClickAll(self.tavernVisitimage,
-                                           confidence=0.95)
+                                           confidence=0.95, delay=0.8)
 
                 edge = pyautogui.locateOnScreen(
                     'left edge of player aid board.png', confidence=0.85)
@@ -172,7 +174,7 @@ class ClickerProcess(Process):
         if times == 0:
             return
         # start of locking in the 1st supplies quest
-        LZutils.findAndMove(self.abortImg)
+        LZutils.findAndMove(self.abortImg, confidence=0.8)
         pyautogui.scroll(10000)
         aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.7)
         check = None
@@ -200,7 +202,7 @@ class ClickerProcess(Process):
             if pyautogui.locateOnScreen(self.supQuestImg, confidence=0.7) and pyautogui.locateOnScreen(self.coinQuestImg, confidence=0.7):
                 pyautogui.scroll(-1100)
                 return
-            aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.7)
+            aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.95)
             j = 0
             while j < 2 :
                 spot = next(aborts)
@@ -214,18 +216,18 @@ class ClickerProcess(Process):
         raise ErrorLZ.LZException("Two quests not found")
 
 
-
+## I really could do only a region check if its a performance issue
     def UBQ(self):
-        print(self.UBQtodo)
-        # DO i need to check that UBQtodo is a valid input? meh
+        # DO i need to check that UBQtodo is a valid input? should already be
 
         LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5))
 
+        self.UBQsetup()
         while self.UBQtodo > 0:
-            time.sleep(1)
-            if pyautogui.locateOnScreen(self.UBQImg, confidence=0.6, minSearchTime=2) is not None:
+
+            if pyautogui.locateOnScreen(self.UBQImg, confidence=0.8, minSearchTime=1) is not None:
                 LZutils.FindGoClickAll(self.payImg)
-                time.sleep(1)
+                time.sleep(0.3)
                 i = 1
                 while i >= 0:
 
@@ -235,16 +237,27 @@ class ClickerProcess(Process):
                         time.sleep(0.3)
                         self.UBQsetup()
                         break
+                    # first collect expects one, any more triggers the setup
+                    # second scrolls up but expects none.
                     i -= 1
                     pyautogui.scroll(1000)
 
                 self.UBQtodo -= 1
                 pyautogui.scroll(-1000)
             else:
-                time.sleep(1)
+
                 try:
-                    LZutils.findClick(self.abortImg)
+                    aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.9)
+                    j = 0
+                    while j < self.UBQgivers:
+                        spot = next(aborts)
+                        j += 1
+                    # This should pick the bottom abort button.
+                    # Oh, but if duplicates are detected...
+                    LZutils.goClick(pyautogui.center(spot))
+
                 except ErrorLZ.LZException:
+                    pyautogui.alert(text='no abort found')
                     break
 
 
