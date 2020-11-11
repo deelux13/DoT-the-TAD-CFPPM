@@ -21,6 +21,11 @@ exit out of UBQ
 make the start a little more robust
 
 settlement
+
+optimize speed and pixel specific, region looking
+
+record UBQ collections
+
 """
 
 """
