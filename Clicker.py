@@ -183,14 +183,15 @@ class ClickerProcess(Process):
         
         # 2 givers 
         if times == 1:
-            LZutils.findAndMove(self.abortImg, confidence=0.7)
+            LZutils.findAndMove(self.abortImg, confidence=0.9)
             time.sleep(0.2)
+            pyautogui.scroll(1000)
             check = None
             while check is None:
                 
                 check = pyautogui.locateOnScreen(self.coinQuestImg)
                 if check is None:
-                    LZutils.findClick(self.abortImg, confidence=0.7)
+                    LZutils.findClick(self.abortImg, confidence=0.9)
                 time.sleep(0.3)
             if pyautogui.center(check)[1] > pyautogui.center(pyautogui.locateOnScreen(self.abortImg, confidence=0.95))[0]:
                 #then the bottom RQ is one we want, and we just abotrt the top
@@ -260,7 +261,7 @@ class ClickerProcess(Process):
                 while i >= 0:
 
                     found = LZutils.FindGoClickAll(self.collect,
-                                                   confidence=0.7)
+                                                   confidence=0.8)
                     if found > i:
                         time.sleep(0.3)
                         self.UBQsetup()

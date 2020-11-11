@@ -31,6 +31,10 @@ ubq abort finding is rough. needs an LZutil probably that returns a list.
 make the findClick or something return # so that UBQ logic can just check for
 pay image or pay pixels and then be faster
 
+
+2 givers is not working
+
+aid isnt screenshotting only the small part...
 """
 
 """
