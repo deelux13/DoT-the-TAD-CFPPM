@@ -25,7 +25,12 @@ settlement
 optimize speed and pixel specific, region looking
 
 record UBQ collections
-test
+
+ubq abort finding is rough. needs an LZutil probably that returns a list.
+
+make the findClick or something return # so that UBQ logic can just check for
+pay image or pay pixels and then be faster
+
 """
 
 """

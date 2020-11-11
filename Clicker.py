@@ -40,6 +40,7 @@ class ClickerProcess(Process):
         self.supQuestImg = "Supplies quest identify.png"
         self.coinQuestImg = "Coin quest identify.png"
         self.UBQexitImg = 'UBQ exit button.png'
+        self.closeImg = "Close button.png"
 
     def UBQask(self):
 
@@ -116,7 +117,7 @@ class ClickerProcess(Process):
                 im = pyautogui.screenshot(imageFilename='tempAidcheck.png',
                                           region=Checkregion)
                 LZutils.findClick(self.moveRightpageimage)
-                time.sleep(1)
+                time.sleep(2)
                 # TODO thses folowing iffs are useless since the failed aid
                 # logic is in the ClickAll
                 if pyautogui.locateOnScreen("Visit Not Possible.png",
@@ -129,6 +130,7 @@ class ClickerProcess(Process):
                     LZutils.goClick("No Visit Okay button.png")
 
                 if not Aided:
+                    time.sleep(2)
 
                     testerDat = pyautogui.locateOnScreen(im,
                                                          confidence=0.95)
@@ -171,50 +173,71 @@ class ClickerProcess(Process):
         """
         LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))
         times = self.UBQgivers - 1
-        spots = [self.supQuestImg, self. coinQuestImg]
+        spots = [self.supQuestImg, self.coinQuestImg]
         if times == 0:
             return
-        # start of locking in the 1st supplies quest
-        LZutils.findAndMove(self.abortImg, confidence=0.8)
-        pyautogui.scroll(10000)
-        aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.7)
-        check = None
-        while check is None:
-            """
-            # get the first on on the screen
-            # i figure i'm missing something, but i'm assuming that we don't
-            have one of them in the bottom slot it shouldnt be normally, since
-            we normally just finished a UBQ in the bottom slot
-            """
-            check = pyautogui.locateOnScreen(self.supQuestImg)
-            if check is None:
+        
+        # 2 givers 
+        if times == 1:
+            LZutils.findAndMove(self.abortImg, confidence=0.7)
+            time.sleep(0.2)
+            check = None
+            while check is None:
+                
                 check = pyautogui.locateOnScreen(self.coinQuestImg)
-            if check is None:
+                if check is None:
+                    LZutils.findClick(self.abortImg, confidence=0.7)
+                time.sleep(0.3)
+            if pyautogui.center(check)[1] > pyautogui.center(pyautogui.locateOnScreen(self.abortImg, confidence=0.95))[0]:
+                #then the bottom RQ is one we want, and we just abotrt the top
                 LZutils.findClick(self.abortImg, confidence=0.7)
-            time.sleep(0.3)
-        #now we have one onscreen v vb
-        if pyautogui.center(check)[1] > pyautogui.center(pyautogui.locateOnScreen(self.abortImg, confidence=0.7))[1]:
-            #then the bottom RQ is one we want, and we just abotrt the top
-            LZutils.findClick(self.abortImg, confidence=0.7)
-            time.sleep(0.3)
-        # now the top one is the one we want
-        i = 0
-        while i < 100:
-            if pyautogui.locateOnScreen(self.supQuestImg, confidence=0.7) and pyautogui.locateOnScreen(self.coinQuestImg, confidence=0.7):
-                pyautogui.scroll(-1100)
-                return
-            aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.95)
-            j = 0
-            while j < 2 :
+                time.sleep(0.3)
+            # now ours is the top one
+            return
+            
+
+
+        # 3 givers active
+        if times == 2:
+            # lock first quest
+            LZutils.findAndMove(self.abortImg, confidence=0.8)
+            time.sleep(0.2)
+            pyautogui.scroll(10000)
+            aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.7)
+            check = None
+            while check is None:
+                """
+                # get the first on on the screen
+                # i figure i'm missing something, but i'm assuming that we don't
+                have one of them in the bottom slot it shouldnt be normally, since
+                we normally just finished a UBQ in the bottom slot
+                """
+                check = pyautogui.locateOnScreen(self.supQuestImg)
+                if check is None:
+                    check = pyautogui.locateOnScreen(self.coinQuestImg)
+                if check is None:
+                    LZutils.findClick(self.abortImg, confidence=0.7)
+                time.sleep(0.3)
+            #now we have one onscreen v vb
+            if pyautogui.center(check)[1] > pyautogui.center(pyautogui.locateOnScreen(self.abortImg, confidence=0.7))[1]:
+                #then the bottom RQ is one we want, and we just abotrt the top
+                LZutils.findClick(self.abortImg, confidence=0.7)
+                time.sleep(0.3)
+            # now the top one is the one we want
+            i = 0
+            while i < 100:
+                if pyautogui.locateOnScreen(self.supQuestImg, confidence=0.7) and pyautogui.locateOnScreen(self.coinQuestImg, confidence=0.7):
+                    pyautogui.scroll(-1100)
+                    return
+                aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.95)
+                next(aborts)
                 spot = next(aborts)
-                j += 1
 
-            LZutils.goClick(pyautogui.center(spot))
-            time.sleep(0.3)
+                LZutils.goClick(pyautogui.center(spot))
+                time.sleep(0.3)
 
 
-            i += 1
-        raise ErrorLZ.LZException("Two quests not found")
+            raise ErrorLZ.LZException("Two quests not found")
 
 
 ## I really could do only a region check if its a performance issue
@@ -241,7 +264,7 @@ class ClickerProcess(Process):
                     # first collect expects one, any more triggers the setup
                     # second scrolls up but expects none.
                     try:
-                        LZutils.findClick("Close button.png")
+                        LZutils.findClick(self.closeImg)
                         pyautogui.moveTo(center)
                     except:
                         pass
@@ -253,14 +276,18 @@ class ClickerProcess(Process):
             else:
 
                 try:
-                    aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.9)
+                    aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.95)
+                    spots = [0]
                     j = 0
-                    while j < self.UBQgivers:
-                        spot = next(aborts)
+                    while spots[j] is not None :
+                        spot = next(aborts, None)
                         j += 1
-                    # This should pick the bottom abort button.
-                    # Oh, but if duplicates are detected...
+                        spots.append(spot)
+                    spot = spots[len(spots) - 1]
+                    
                     LZutils.goClick(pyautogui.center(spot))
+                    time.sleep(0.3)
+                    # should click the bottom abort button
 
                 except ErrorLZ.LZException:
                     pyautogui.alert(text='no abort found')
