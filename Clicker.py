@@ -39,6 +39,7 @@ class ClickerProcess(Process):
         self.UBQask()
         self.supQuestImg = "Supplies quest identify.png"
         self.coinQuestImg = "Coin quest identify.png"
+        self.UBQexitImg = 'UBQ exit button.png'
 
     def UBQask(self):
 
@@ -221,7 +222,7 @@ class ClickerProcess(Process):
         # DO i need to check that UBQtodo is a valid input? should already be
 
         LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5))
-
+        center = pyautogui.locateCenterOnScreen(self.abortImg, confidence=0.7)
         self.UBQsetup()
         while self.UBQtodo > 0:
 
@@ -239,6 +240,11 @@ class ClickerProcess(Process):
                         break
                     # first collect expects one, any more triggers the setup
                     # second scrolls up but expects none.
+                    try:
+                        LZutils.findClick("Close button.png")
+                        pyautogui.moveTo(center)
+                    except:
+                        pass
                     i -= 1
                     pyautogui.scroll(1000)
 
@@ -259,6 +265,7 @@ class ClickerProcess(Process):
                 except ErrorLZ.LZException:
                     pyautogui.alert(text='no abort found')
                     break
+        LZutils.findClick(self.UBQexitImg, confidence=0.8)
 
 
 
