@@ -289,7 +289,7 @@ class ClickerProcess(Process):
                         spot = next(aborts, None)
                         j += 1
                         spots.append(spot)
-                    spot = spots[len(spots) - 1]
+                    spot = spots[len(spots) - 2]
                     
                     LZutils.goClick(pyautogui.center(spot))
                     time.sleep(0.3)
