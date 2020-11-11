@@ -41,6 +41,7 @@ class ClickerProcess(Process):
         self.coinQuestImg = "Coin quest identify.png"
         self.UBQexitImg = 'UBQ exit button.png'
         self.closeImg = "Close button.png"
+        self.data()
 
     def UBQask(self):
 
@@ -69,6 +70,10 @@ class ClickerProcess(Process):
         if pyautogui.prompt(text='Do you want to aid the available aids in your hood? type "YES" only if you\'re done being the TAD') == 'YES':
             self.tabs.append("Hood")
         # not sure how to add hood option, don't want it to accidentally trigger for DoT
+
+
+    def data(self):
+        self.DataCol = pyautogui.confirm(text='Do UBQ timing? aid is currently skipped', buttons=["Yes", "No"])
 
     def AidClickAll(self, image, confidence=0.9):
         """Clicking routine for the Aid method."""
@@ -301,7 +306,9 @@ class ClickerProcess(Process):
 
         print("Clicker process run")
         pyautogui.alert("Starting")
+        tic = time.perf_counter()
         timeLoop = 0
+        totalUBQ = self.UBQtodo
         try:
             self.UBQ()
         except ErrorLZ.LZException:
@@ -309,6 +316,9 @@ class ClickerProcess(Process):
         # should make this be the not found error but didn't go dig to find it
 
         # runs however many ubqs were told in __INIT__
+        toc = time.perf_counter()
+        if self.DataCol == 'Yes':
+            pyautogui.alert(text=f'{totalUBQ} UBQs took {toc - tic:0.4f} seconds i think', title=f'{(toc - tic)//60} minutes maybe')
 
         while True:
             self.Collect()
