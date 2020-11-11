@@ -12,6 +12,15 @@ TODO
 
 comment stuff
 
+UBQ blueprin
+
+UBQ 2 giver hold coin quest
+
+exit out of UBQ
+
+make the start a little more robust
+
+settlement
 """
 
 """
