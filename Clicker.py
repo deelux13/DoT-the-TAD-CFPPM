@@ -198,6 +198,7 @@ class ClickerProcess(Process):
                 LZutils.findClick(self.abortImg, confidence=0.7)
                 time.sleep(0.3)
             # now ours is the top one
+            pyautogui.scroll(-1000)
             return
             
 
@@ -312,7 +313,9 @@ class ClickerProcess(Process):
         try:
             self.UBQ()
         except ErrorLZ.LZException:
-            pass
+            print("something went wrong in UBQ")
+            
+            
         # should make this be the not found error but didn't go dig to find it
 
         # runs however many ubqs were told in __INIT__
