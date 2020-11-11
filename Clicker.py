@@ -60,8 +60,7 @@ class ClickerProcess(Process):
                 pyautogui.alert(text="Not a number")
 
         self.UBQgivers = int(pyautogui.confirm(text='How many quest givers?',buttons=['1', '2', '3']))
-        if self.UBQgivers == 2:
-            pyautogui.alert(test='2 givers not actually supported...yet...')
+
 
     def Hood(self):
         """"Pull yes/no for hood aid and populate aidtab list"""
@@ -73,7 +72,7 @@ class ClickerProcess(Process):
 
 
     def data(self):
-        self.DataCol = pyautogui.confirm(text='Do UBQ timing? aid is currently skipped', buttons=["Yes", "No"])
+        self.DataCol = pyautogui.confirm(text='Do UBQ timing? aid is currently skipped if this is chosen', buttons=["Yes", "No"])
 
     def AidClickAll(self, image, confidence=0.9):
         """Clicking routine for the Aid method."""
