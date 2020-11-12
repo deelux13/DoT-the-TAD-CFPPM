@@ -180,15 +180,15 @@ class ClickerProcess(Process):
         spots = [self.supQuestImg, self.coinQuestImg]
         if times == 0:
             return
-        
-        # 2 givers 
+
+        # 2 givers
         if times == 1:
             LZutils.findAndMove(self.abortImg, confidence=0.9)
             time.sleep(0.2)
             pyautogui.scroll(1000)
             check = None
             while check is None:
-                
+
                 check = pyautogui.locateOnScreen(self.coinQuestImg)
                 if check is None:
                     LZutils.findClick(self.abortImg, confidence=0.9)
@@ -200,7 +200,7 @@ class ClickerProcess(Process):
             # now ours is the top one
             pyautogui.scroll(-1000)
             return
-            
+
 
 
         # 3 givers active
@@ -282,7 +282,7 @@ class ClickerProcess(Process):
             else:
 
                 try:
-                    aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.95)
+                    aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.9)
                     spots = [0]
                     j = 0
                     while spots[j] is not None :
@@ -290,13 +290,18 @@ class ClickerProcess(Process):
                         j += 1
                         spots.append(spot)
                     spot = spots[len(spots) - 2]
-                    
+
                     LZutils.goClick(pyautogui.center(spot))
+                    # when screen grab fails this is still 0 and error
                     time.sleep(0.3)
                     # should click the bottom abort button
 
                 except ErrorLZ.LZException:
                     pyautogui.alert(text='no abort found')
+                    break
+                except OSError or TypeError:
+                    print("issues with UBQ finding abort button")
+
                     break
         LZutils.findClick(self.UBQexitImg, confidence=0.8)
 
@@ -314,8 +319,8 @@ class ClickerProcess(Process):
             self.UBQ()
         except ErrorLZ.LZException:
             print("something went wrong in UBQ")
-            
-            
+
+
         # should make this be the not found error but didn't go dig to find it
 
         # runs however many ubqs were told in __INIT__
