@@ -35,6 +35,10 @@ pay image or pay pixels and then be faster
 2 givers is not working
 
 aid isnt screenshotting only the small part...
+
+pull specific pixels?
+
+pyautogui.PAUSE = 0
 """
 
 """
