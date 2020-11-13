@@ -175,7 +175,7 @@ class ClickerProcess(Process):
         None.
 
         """
-        print("starting setup, {self.UBQgivers} givers".format())
+        print("starting setup, {} givers".format(self.UBQgivers))
         LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))
         times = self.UBQgivers - 1
         spots = [self.supQuestImg, self.coinQuestImg]
