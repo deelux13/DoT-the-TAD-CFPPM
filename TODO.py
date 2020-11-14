@@ -12,7 +12,6 @@ TODO
 
 comment stuff
 
-UBQ blueprin
 
 UBQ 2 giver hold coin quest
 
@@ -44,6 +43,7 @@ pyautogui.PAUSE = 0
 """
 TO DONE
 
+UBQ blueprin
 
 aid not possible exception
 """

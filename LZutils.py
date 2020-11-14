@@ -18,6 +18,55 @@ def findAndMove(file, confidence=.9):
     pyautogui.moveTo(pyautogui.center(pyautogui.locateOnScreen(file, confidence=confidence)))
 
 
+def findAllList(file, confidence=0.92):
+    """Find All, no overlap detection only safe with first and last.
+
+    Parameters
+    ----------
+    file : Img to find
+    confidence : float. The default is 0.92.
+
+    Returns
+    -------
+    list of all regions found
+
+    """
+    gen = pyautogui.locateAllOnScreen(file, confidence=confidence)
+    rect = next(gen, None)
+    spots = []
+    if rect is not None:
+        spots.append(rect)
+        next(gen, None)
+        #this puts the first one on
+    else:
+        return None
+    # returns that none were found
+
+    while rect is not None:
+
+        spots.append(rect)
+        next(gen, None)
+    return spots
+
+
+def spotWithin(first, second):
+    """
+
+
+    Parameters
+    ----------
+    first : TYPE
+        DESCRIPTION.
+    second : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    Bool: true if they overlap
+
+    """
+
+
 def pullMousebox():
     """Return of user generated box.
 

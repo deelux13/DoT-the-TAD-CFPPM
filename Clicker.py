@@ -10,6 +10,7 @@ from multiprocessing import Process
 import LZutils
 import time
 import ErrorLZ
+import GameInterface
 
 
 class ClickerProcess(Process):
@@ -164,7 +165,7 @@ class ClickerProcess(Process):
             LZutils.RestartProductions()
             i += 1
 
-    def UBQsetup(self):
+    def UBQsetup(self, Face):
         """Put the supply and coin gather quests at the top.
 
         This is very much not set up to do 2 quests, but this is the harder
@@ -200,6 +201,7 @@ class ClickerProcess(Process):
                 time.sleep(0.3)
             # now ours is the top one
             pyautogui.scroll(-1000)
+            print("2 giver setup end")
             return
 
 
@@ -252,6 +254,7 @@ class ClickerProcess(Process):
         # DO i need to check that UBQtodo is a valid input? should already be
 
         LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5))
+        Face = GameInterface.Interface()
         center = pyautogui.locateCenterOnScreen(self.abortImg, confidence=0.7)
         self.UBQsetup()
         while self.UBQtodo > 0:
@@ -283,18 +286,7 @@ class ClickerProcess(Process):
             else:
 
                 try:
-                    aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.9)
-                    spots = [0]
-                    j = 0
-                    while spots[j] is not None :
-                        spot = next(aborts, None)
-                        j += 1
-                        spots.append(spot)
-                    spot = spots[len(spots) - 2]
-                    if spot != 0:
-                        LZutils.goClick(pyautogui.center(spot))
-                    # when screen grab fails this is still 0 and error
-                    time.sleep(0.3)
+                    Face.ClickBottomAbort()
                     # should click the bottom abort button
 
                 except ErrorLZ.LZException:
