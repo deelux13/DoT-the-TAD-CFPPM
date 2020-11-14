@@ -36,6 +36,10 @@ pay image or pay pixels and then be faster
 
 aid isnt screenshotting only the small part...
 
+pull specific pixels?
+
+pyautogui.PAUSE = 0
+
 UBQ is clicking the top when there is a UBQ onscreen... i think it doesn't realize the UBQ is actually onscreen like the bottom clips... or something'
 
 make it so it just clicks the pay button...'

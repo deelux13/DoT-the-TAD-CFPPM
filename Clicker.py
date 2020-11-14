@@ -175,6 +175,7 @@ class ClickerProcess(Process):
         None.
 
         """
+        print("starting setup, {} givers".format(self.UBQgivers))
         LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))
         times = self.UBQgivers - 1
         spots = [self.supQuestImg, self.coinQuestImg]
@@ -290,8 +291,8 @@ class ClickerProcess(Process):
                         j += 1
                         spots.append(spot)
                     spot = spots[len(spots) - 2]
-
-                    LZutils.goClick(pyautogui.center(spot))
+                    if spot != 0:
+                        LZutils.goClick(pyautogui.center(spot))
                     # when screen grab fails this is still 0 and error
                     time.sleep(0.3)
                     # should click the bottom abort button
