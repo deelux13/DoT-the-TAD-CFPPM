@@ -69,6 +69,7 @@ def spotWithin(first, second):
 
 def findRGBarea():
     cursor = pyautogui.position()
+    time.sleep(3)
     box = [cursor[0] - 10, cursor[1] - 10, 20, 20] # top left x,y and bottom right x,y
     img = pyautogui.screenshot(region=box)
     Color = [[], [], []] # color [0] Red, [1] Green, [2] Blue

@@ -173,6 +173,8 @@ class ClickerProcess(Process):
 
     def UBQsetup(self):
         """Put the supply and coin gather quests at the top.
+        
+        Please only call this with quest already open.
 
         This is very much not set up to do 2 quests, but this is the harder
         implementation.The other one can be added via some copypasta.
@@ -260,10 +262,15 @@ class ClickerProcess(Process):
         # DO i need to check that UBQtodo is a valid input? should already be
         try:
             LZutils.findClick(self.UBQexitImg, confidence=0.8)
+            print("try")
+        except ErrorLZ.LZException:
+            pass
         finally:
             self.Face = GameInterface.Interface()
             LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5))
+            print("finally")
         print("onnly open")
+        time.sleep(1)
         center = pyautogui.locateCenterOnScreen(self.abortImg, confidence=0.7)
         print("pre UBQ setup")
         self.UBQsetup()

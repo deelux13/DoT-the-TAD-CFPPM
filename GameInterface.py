@@ -37,18 +37,22 @@ class Interface():
         Assumes that quest panel is open, cuz you dumb if you call this with
         it closed."""
         xSafe = self.topLeftX + 150
-        yMid = self.topLeftY + 500
+        yMid = self.topLeftY + 300
+        print(self.topLeftY, "top offset")
         xAbort = int(self.topLeftX) + 270
         pyg.moveTo(x=xSafe, y=yMid)
         pyg.scroll(-1000)
         # Scroll down so that the bottom abort is visible.
         region = [xAbort, self.topLeftY, 1, self.aidBoardTopY - self.topLeftY]
         img = pyg.screenshot(region=region)
-        for y in range(region[3], 0, -4):
-            r, g, b = img.getpixel((xAbort, y))
+        
+        for y in range(region[3] - 2, 0, -4):
+            r, g, b = img.getpixel((0, y))
             if r in range(111,240) and g in range(37,50):
-                pyg.moveTo(xAbort, y + region[2], 0.1)
+                pyg.moveTo(xAbort, y + region[1], 0.1)
                 pyg.click()
+                print("y ", y)
+                print(f'Point {xAbort}, {y + region[2]} with R {r}, G {g}, B {b}')
                 break
 
         return
