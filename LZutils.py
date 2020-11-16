@@ -66,6 +66,18 @@ def spotWithin(first, second):
 
     """
 
+def findRBGarea():
+    cursor = pyautogui.position()
+    box = [cursor[0] - 15, cursor[1] - 15, cursor[0]+15 , cursor[1] + 15] # top left x,y and bottom right x,y
+    Color = [[], [], []] # color [0] Red, [1] Green, [2] Blue
+    for x in range(box[0], box[2], 3):
+        for y in range(box[1], box[3], 3):
+            r, g, b = pyautogui.pixel(x, y)
+            Color[0].append(r)
+            Color[1].append(g)
+            Color[2].append(b)
+    # TODO need like an average or something to view
+
 
 def pullMousebox():
     """Return of user generated box.
