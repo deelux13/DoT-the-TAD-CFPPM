@@ -38,6 +38,18 @@ aid isnt screenshotting only the small part...
 pull specific pixels?
 
 pyautogui.PAUSE = 0
+
+
+the interface needs a wait function that just grabs a pixel or 4 and waits until it shifts back... 
+cuz most things when they load, black the background. so pull maybe 20 pixels that normally should show
+doesn't apply to UBQ the same way. will watch for the background going from light to not.
+but others watch for dark to light. 
+
+need to make the temp be just a pil saved image not a saved stored image. 
+
+maybe i could make clicker be a wrapper and wrap the run function so there'd be more flexibility..'
+
+screenshotting region...?
 """
 
 """

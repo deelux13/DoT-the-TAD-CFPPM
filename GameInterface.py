@@ -16,12 +16,12 @@ def cycle():
 class Interface():
     """The Game facing interface aka pixel finder and other utils."""
     def __init__(self):
-        self.topLeft = pyg.locateOnScreen("Top Left corner.png", confidence=0.9)
+        self.topLeft = pyg.locateOnScreen("Top Left corner.png", confidence=0.8)
         self.RightEdgeQuestX = self.topLeft[0] + 690
         self.QuestMiddle = self.RightEdgeQuestX//2
         self.topLeftX = self.topLeft[0]
         self.topLeftY = self.topLeft[1]
-        self.aidBoardTopY = pyg.locateOnScreen("lefft edge of player aid board.png", confidence=0.9)
+        self.aidBoardTopY = pyg.locateOnScreen("left edge of player aid board.png", confidence=0.9)[1]
         if self.topLeftX > 30:
             pyg.alert("You really should maximize the screen...")
         # TODO i think i might need to add something here...
@@ -38,7 +38,7 @@ class Interface():
         it closed."""
         xSafe = self.topLeftX + 150
         yMid = self.topLeftY + 500
-        xAbort = self.topLeftX + 270
+        xAbort = int(self.topLeftX) + 270
         pyg.moveTo(x=xSafe, y=yMid)
         pyg.scroll(-1000)
         # Scroll down so that the bottom abort is visible.
