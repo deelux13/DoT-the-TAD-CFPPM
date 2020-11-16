@@ -43,6 +43,7 @@ class ClickerProcess(Process):
         self.UBQexitImg = 'UBQ exit button.png'
         self.closeImg = "Close button.png"
         self.data()
+        pyautogui.PAUSE = 0
 
     def UBQask(self):
 

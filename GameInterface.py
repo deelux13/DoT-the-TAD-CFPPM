@@ -42,10 +42,12 @@ class Interface():
         pyg.moveTo(x=xSafe, y=yMid)
         pyg.scroll(-1000)
         # Scroll down so that the bottom abort is visible.
-        for y in range(self.aidBoardTopY, 200, -4):
-            r, g, b = pyg.pixel(xAbort, y)
-            if r in range(111,240):
-                pyg.moveTo(xAbort, y, 0.1)
+        region = [xAbort, self.topLeftY, 1, self.aidBoardTopY - self.topLeftY]
+        img = pyg.screenshot(region=region)
+        for y in range(region[3], 0, -4):
+            r, g, b = img.getpixel((xAbort, y))
+            if r in range(111,240) and g in range(37,50):
+                pyg.moveTo(xAbort, y + region[2], 0.1)
                 pyg.click()
                 break
 
