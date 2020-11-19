@@ -5,6 +5,7 @@ Created on Fri Nov 13 14:25:25 2020
 @author: Glen
 """
 import pyautogui as pyg
+import time
 
 
 def cycle():
@@ -50,6 +51,7 @@ class Interface():
             r, g, b = img.getpixel((0, y))
             if r in range(111,240) and g in range(37,50):
                 pyg.moveTo(xAbort, y + region[1], 0.1)
+                time.sleep(0.11)
                 pyg.click()
                 print("y ", y)
                 print(f'Point {xAbort}, {y + region[2]} with R {r}, G {g}, B {b}')
