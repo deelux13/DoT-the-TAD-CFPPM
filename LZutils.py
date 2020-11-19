@@ -18,6 +18,14 @@ def swapVariables(a,b):
 def findAndMove(file, confidence=.9):
     pyautogui.moveTo(pyautogui.center(pyautogui.locateOnScreen(file, confidence=confidence)))
 
+def OverlapDetect(first, second, refImg):
+    Width, Height = refImg.size
+    if second[0] - first[0] < Width and second[1] - first[1] < Height:
+        return True
+    else:
+        return False
+
+
 
 def findAllList(file, confidence=0.92):
     """Find All, no overlap detection only safe with first and last.

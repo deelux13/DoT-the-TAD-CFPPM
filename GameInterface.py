@@ -6,6 +6,8 @@ Created on Fri Nov 13 14:25:25 2020
 """
 import pyautogui as pyg
 import time
+import LZutils
+from PIL import Image
 
 
 def cycle():
@@ -31,6 +33,27 @@ class Interface():
         pass
 
 
+    def BufferLocations(self, img):
+        Img = Image.open(img)
+        gen = pyg.locateAllOnScreen(Img, confidence=0.8)
+        # need the size of the image to detect overlap
+        Width, Height = Img.size
+        List = []
+        spot = next(gen)
+        while spot is not None:
+            List.append(spot)
+            last = spot
+            #stores previous
+
+            spot = next(gen, None)
+            while LZutils.OverlapDetect(last, spot, Img):
+                spot =  next(gen, None)
+                if spot is None:
+                    return List
+                # need to check overlap. if overlap then we move to the next in the generator. if the generator runs out we just return what we have.
+        return List # gen ran out without ending on an  overlap so we got this correctly.
+            
+
 
     def ClickBottomAbort(self):
         """Literally just click the bottom abort, handles scrolling and all.
@@ -50,9 +73,10 @@ class Interface():
         for y in range(region[3] - 2, 0, -4):
             r, g, b = img.getpixel((0, y))
             if r in range(111,240) and g in range(37,50):
-                pyg.moveTo(xAbort, y + region[1], 0.1)
-                time.sleep(0.11)
+                pyg.moveTo(xAbort, y + region[1], 0.3, pyg.easeInOutQuad)
+                time.sleep(0.05)
                 pyg.click()
+                time.sleep(1)
                 print("y ", y)
                 print(f'Point {xAbort}, {y + region[2]} with R {r}, G {g}, B {b}')
                 break

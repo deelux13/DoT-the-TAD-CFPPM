@@ -50,6 +50,8 @@ need to make the temp be just a pil saved image not a saved stored image.
 maybe i could make clicker be a wrapper and wrap the run function so there'd be more flexibility..'
 
 screenshotting region...?
+
+need an find all list buffer. 
 """
 
 """
