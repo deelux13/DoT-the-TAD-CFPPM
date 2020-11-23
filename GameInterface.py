@@ -69,8 +69,13 @@ class Interface():
         yMid = self.topLeftY + 300
         print(self.topLeftY, "top offset")
         xAbort = int(self.topLeftX) + 270
-        pyg.moveTo(x=xSafe, y=yMid)
-        pyg.scroll(-1000)
+        pyg.moveTo(xSafe, yMid, 0.3)
+        # scroll does weird things
+        ij = 0
+        while ij < 5:
+            ij += 1
+            pyg.scroll(-20)
+        time.sleep(0.3)
         # Scroll down so that the bottom abort is visible.
         clicked = False
         while not clicked: #really not sure what i'm doing.
@@ -79,7 +84,10 @@ class Interface():
                 time.sleep(1)
                 continue
             button = List[len(List) - 1]
-            LZutils.goClick(pyg.center(button))
+            center = pyg.center(button) + (0,5)
+            print(center)
+            time.sleep(0.2)
+            LZutils.goClick(center)
             clicked = True
         # len - 1 give index of last on list
 
