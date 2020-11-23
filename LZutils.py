@@ -19,6 +19,8 @@ def findAndMove(file, confidence=.9):
     pyautogui.moveTo(pyautogui.center(pyautogui.locateOnScreen(file, confidence=confidence)))
 
 def OverlapDetect(first, second, refImg):
+    print("util first, ", first)
+    print("util 2nd, ", second)
     Width, Height = refImg.size
     if second[0] - first[0] < Width and second[1] - first[1] < Height:
         return True
@@ -221,8 +223,9 @@ def findClick(image, confidence=.9, offset=(0,0)):
 def goClick(pos):
     """takes location tuple"""
 
-    pyautogui.moveTo(pos, None, 0.2, pyautogui.easeInOutQuad)
-    time.sleep(.5)
+    pyautogui.moveTo(pos, None, 0.3, pyautogui.easeInOutQuad)
+    # time.sleep(.3)
+    #this is inconsisten idk if sleep helps
 
     pyautogui.click(        )
 

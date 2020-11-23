@@ -276,6 +276,7 @@ class ClickerProcess(Process):
         self.UBQsetup()
         print("post UBQ setup")
         while self.UBQtodo > 0:
+            time.sleep(0.5)
 
             if pyautogui.locateOnScreen(self.UBQImg, confidence=0.8, minSearchTime=1) is not None:
                 LZutils.FindGoClickAll(self.payImg)

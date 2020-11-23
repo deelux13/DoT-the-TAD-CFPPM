@@ -51,11 +51,19 @@ maybe i could make clicker be a wrapper and wrap the run function so there'd be 
 
 screenshotting region...?
 
-need an find all list buffer. 
+use regions for find all buffer?
+
+it needs to wait..
+
+seems like i need to rewrite UBQ
+
 """
 
 """
 TO DONE
+
+need an find all list buffer. 
+
 
 UBQ blueprin
 

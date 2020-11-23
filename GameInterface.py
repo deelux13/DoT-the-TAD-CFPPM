@@ -35,21 +35,26 @@ class Interface():
 
     def BufferLocations(self, img):
         Img = Image.open(img)
-        gen = pyg.locateAllOnScreen(Img, confidence=0.8)
+        gen = pyg.locateAllOnScreen(Img, confidence=0.9)
         # need the size of the image to detect overlap
         Width, Height = Img.size
         List = []
-        spot = next(gen)
+        spot = next(gen, None)
         while spot is not None:
             List.append(spot)
             last = spot
             #stores previous
 
             spot = next(gen, None)
+            if spot is None:
+                return List
+            print(last)
+            print(spot)
             while LZutils.OverlapDetect(last, spot, Img):
                 spot =  next(gen, None)
                 if spot is None:
                     return List
+                
                 # need to check overlap. if overlap then we move to the next in the generator. if the generator runs out we just return what we have.
         return List # gen ran out without ending on an  overlap so we got this correctly.
             
@@ -67,19 +72,16 @@ class Interface():
         pyg.moveTo(x=xSafe, y=yMid)
         pyg.scroll(-1000)
         # Scroll down so that the bottom abort is visible.
-        region = [xAbort, self.topLeftY, 1, self.aidBoardTopY - self.topLeftY]
-        img = pyg.screenshot(region=region)
-        
-        for y in range(region[3] - 2, 0, -4):
-            r, g, b = img.getpixel((0, y))
-            if r in range(111,240) and g in range(37,50):
-                pyg.moveTo(xAbort, y + region[1], 0.3, pyg.easeInOutQuad)
-                time.sleep(0.05)
-                pyg.click()
+        clicked = False
+        while not clicked: #really not sure what i'm doing.
+            List = self.BufferLocations("Abort button.png")
+            if len(List) < 1:
                 time.sleep(1)
-                print("y ", y)
-                print(f'Point {xAbort}, {y + region[2]} with R {r}, G {g}, B {b}')
-                break
+                continue
+            button = List[len(List) - 1]
+            LZutils.goClick(pyg.center(button))
+            clicked = True
+        # len - 1 give index of last on list
 
         return
 
