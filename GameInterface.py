@@ -62,6 +62,8 @@ class Interface():
 
     def ClickBottomAbort(self):
         """Literally just click the bottom abort, handles scrolling and all.
+        
+        This is rather slow. 
 
         Assumes that quest panel is open, cuz you dumb if you call this with
         it closed."""
@@ -75,23 +77,24 @@ class Interface():
         while ij < 5:
             ij += 1
             pyg.scroll(-20)
-        time.sleep(0.3)
+        
         # Scroll down so that the bottom abort is visible.
         clicked = False
-        while not clicked: #really not sure what i'm doing.
-            List = self.BufferLocations("Abort button.png")
-            if len(List) < 1:
-                time.sleep(1)
-                continue
-            button = List[len(List) - 1]
-            center = pyg.center(button) + (0,5)
-            print(center)
-            time.sleep(0.2)
-            LZutils.goClick(center)
-            clicked = True
+        #really not sure what i'm doing.
+        # i think this just passes back false if the abort hasn't loaded  yet.
+        List = self.BufferLocations("Abort button.png")
+        if len(List) < 1:
+            time.sleep(1)
+            return False
+        button = List[len(List) - 1]
         # len - 1 give index of last on list
 
-        return
+        center = pyg.center(button) + (0,5) # this offset totally doesn't work.
+        print(center)
+        
+        LZutils.goClick(center)
+        time.sleep(3.2)
+        return True
 
     def ClickTopAbort(self):
         xSafe = self.topLeftX + 150

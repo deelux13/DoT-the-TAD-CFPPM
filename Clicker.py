@@ -125,8 +125,7 @@ class ClickerProcess(Process):
                                end[0], end[1]+end[3]-5-edge[1])
                 # TODO what is this mess?
 
-                im = pyautogui.screenshot(imageFilename='tempAidcheck.png',
-                                          region=Checkregion)
+                im = pyautogui.screenshot(region=Checkregion)
                 LZutils.findClick(self.moveRightpageimage)
                 time.sleep(2)
                 # TODO thses folowing iffs are useless since the failed aid
@@ -195,7 +194,7 @@ class ClickerProcess(Process):
         if times == 1:
             LZutils.findAndMove(self.abortImg, confidence=0.9)
             time.sleep(0.2)
-            pyautogui.scroll(1000)
+            pyautogui.scroll(1000) # these scrolls may break it
             check = None
             while check is None:
 
@@ -258,16 +257,17 @@ class ClickerProcess(Process):
 
 
 ## I really could do only a region check if its a performance issue
+# seems like the FOE performance is the real hangup at least on ubu-dev
     def UBQ(self):
         # DO i need to check that UBQtodo is a valid input? should already be
         try:
             LZutils.findClick(self.UBQexitImg, confidence=0.8)
             print("try")
         except ErrorLZ.LZException:
-            pass
+            pass # not needed for now?
         finally:
             self.Face = GameInterface.Interface()
-            LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5))
+            LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5)) #think that offsets broken.
             print("finally")
         print("onnly open")
         time.sleep(1)
@@ -278,8 +278,7 @@ class ClickerProcess(Process):
         while self.UBQtodo > 0:
             time.sleep(0.5)
 
-            if pyautogui.locateOnScreen(self.UBQImg, confidence=0.8, minSearchTime=1) is not None:
-                LZutils.FindGoClickAll(self.payImg)
+            if LZutils.FindGoClickAll(self.payImg):
                 time.sleep(0.3)
                 i = 1
                 while i >= 0:
@@ -307,14 +306,15 @@ class ClickerProcess(Process):
                 try:
                     self.Face.ClickBottomAbort()
                     # should click the bottom abort button
+                    # returns false if it doesn't click. but i don't care right now.
 
                 except ErrorLZ.LZException:
                     pyautogui.alert(text='no abort found')
-                    break
+                    continue
                 except OSError or TypeError:
                     print("issues with UBQ finding abort button")
 
-                    break
+                    continue
         LZutils.findClick(self.UBQexitImg, confidence=0.8)
 
 
