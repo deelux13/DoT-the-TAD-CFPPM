@@ -6,5 +6,9 @@ Created on Fri Nov  6 12:27:53 2020
 """
 
 import LZutils
+def main():
+    if __name__ == "__main__":
 
-LZutils.pullImage()
+        LZutils.pullImage()
+
+main()

@@ -8,6 +8,7 @@ Created on Fri Nov  6 10:01:26 2020
 import pyautogui
 import time
 import ErrorLZ
+from statistics import mean
 
 
 def swapVariables(a,b):
@@ -16,6 +17,93 @@ def swapVariables(a,b):
 
 def findAndMove(file, confidence=.9):
     pyautogui.moveTo(pyautogui.center(pyautogui.locateOnScreen(file, confidence=confidence)))
+
+def OverlapDetect(first, second, refImg):
+    print("util first, ", first)
+    print("util 2nd, ", second)
+    Width, Height = refImg.size
+    if second[0] - first[0] < Width and second[1] - first[1] < Height:
+        return True
+    else:
+        return False
+
+
+
+def findAllList(file, confidence=0.92):
+    """Find All, no overlap detection only safe with first and last.
+
+    Parameters
+    ----------
+    file : Img to find
+    confidence : float. The default is 0.92.
+
+    Returns
+    -------
+    list of all regions found
+
+    """
+    gen = pyautogui.locateAllOnScreen(file, confidence=confidence)
+    rect = next(gen, None)
+    spots = []
+    if rect is not None:
+        spots.append(rect)
+        next(gen, None)
+        #this puts the first one on
+    else:
+        return None
+    # returns that none were found
+
+    while rect is not None:
+
+        spots.append(rect)
+        next(gen, None)
+    return spots
+
+
+def spotWithin(first, second):
+    """
+
+
+    Parameters
+    ----------
+    first : TYPE
+        DESCRIPTION.
+    second : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    Bool: true if they overlap
+
+    """
+
+def findRGBarea():
+    cursor = pyautogui.position()
+    time.sleep(3)
+    box = [cursor[0] - 10, cursor[1] - 10, 20, 20] # top left x,y and bottom right x,y
+    img = pyautogui.screenshot(region=box)
+    Color = [[], [], []] # color [0] Red, [1] Green, [2] Blue
+    img.getpixel((2, 2))
+    for x in range(0, box[2], 3):
+
+        for y in range(0, box[3], 3):
+            
+            r, g, b = img.getpixel((x, y))
+            Color[0].append(r)
+            Color[1].append(g)
+            Color[2].append(b)
+    # TODO need like an average or something to view
+    R = mean(Color[0])
+    G = mean(Color[1])
+    B = mean(Color[2])
+    print(f'mean values R {R}, G {G}, B {B}')
+    Rrange = set(Color[0])
+    Grange = set(Color[1])
+    Brange = set(Color[2])
+    # red = (Rrange[0], Rrange[len(Rrange) - 2])
+    # green = (Grange[0], Grange[len(Grange) - 2])
+    # blue = (Brange[0], Brange[len(Brange) - 2])
+    print(f'range of R {Rrange}, G {Grange}, B {Brange}')
 
 
 def pullMousebox():
@@ -127,16 +215,16 @@ def findClick(image, confidence=.9, offset=(0,0)):
         raise ErrorLZ.LZException("'{}' Not found on screen".format(image))
     pos = pyautogui.center(rect)
     pos = pos + offset
-    pyautogui.moveTo(pos, None, 0.3, pyautogui.easeInOutQuad)
-    pyautogui.click(        )
-
+    print(pos)
+    goClick(pos)
 
 #i really don't think its worth my effort to make a function for 2 lines...
 def goClick(pos):
     """takes location tuple"""
 
-    pyautogui.moveTo(pos, None, 0.2, pyautogui.easeInOutQuad)
-    time.sleep(.5)
+    pyautogui.moveTo(pos, None, 0.3, pyautogui.easeInOutQuad)
+    # time.sleep(.3)
+    #this is inconsisten idk if sleep helps
 
     pyautogui.click(        )
 

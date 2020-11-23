@@ -12,7 +12,6 @@ TODO
 
 comment stuff
 
-UBQ blueprin
 
 UBQ 2 giver hold coin quest
 
@@ -40,14 +39,36 @@ pull specific pixels?
 
 pyautogui.PAUSE = 0
 
-UBQ is clicking the top when there is a UBQ onscreen... i think it doesn't realize the UBQ is actually onscreen like the bottom clips... or something'
 
-make it so it just clicks the pay button...'
+the interface needs a wait function that just grabs a pixel or 4 and waits until it shifts back... 
+cuz most things when they load, black the background. so pull maybe 20 pixels that normally should show
+doesn't apply to UBQ the same way. will watch for the background going from light to not.
+but others watch for dark to light. 
+
+need to make the temp be just a pil saved image not a saved stored image. 
+
+maybe i could make clicker be a wrapper and wrap the run function so there'd be more flexibility..'
+
+screenshotting region...?
+
+use regions for find all buffer?
+
+it needs to wait..
+
+seems like i need to rewrite UBQ
+
+
+the scrolls break stuff? fix it?
+
 """
 
 """
 TO DONE
 
+need an find all list buffer. 
+
+
+UBQ blueprin
 
 aid not possible exception
 """

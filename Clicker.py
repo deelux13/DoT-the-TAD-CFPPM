@@ -10,6 +10,7 @@ from multiprocessing import Process
 import LZutils
 import time
 import ErrorLZ
+import GameInterface
 
 
 class ClickerProcess(Process):
@@ -42,6 +43,7 @@ class ClickerProcess(Process):
         self.UBQexitImg = 'UBQ exit button.png'
         self.closeImg = "Close button.png"
         self.data()
+        pyautogui.PAUSE = 0
 
     def UBQask(self):
 
@@ -87,6 +89,10 @@ class ClickerProcess(Process):
             hits += 1
             if hits > 7:
                 LZutils.findClick("Page step right.png")
+                time.sleep(0.3)
+            if hits > 12:
+                return True
+            # TODO this really needs to be better.
             thing = pyautogui.locateOnScreen(image, confidence=confidence)
             # last thing in the loop is to prep it for next loop
         return True
@@ -117,9 +123,9 @@ class ClickerProcess(Process):
 
                 Checkregion = (edge[0]+10, edge[1]+5,
                                end[0], end[1]+end[3]-5-edge[1])
+                # TODO what is this mess?
 
-                im = pyautogui.screenshot(imageFilename='tempAidcheck.png',
-                                          region=Checkregion)
+                im = pyautogui.screenshot(region=Checkregion)
                 LZutils.findClick(self.moveRightpageimage)
                 time.sleep(2)
                 # TODO thses folowing iffs are useless since the failed aid
@@ -166,6 +172,8 @@ class ClickerProcess(Process):
 
     def UBQsetup(self):
         """Put the supply and coin gather quests at the top.
+        
+        Please only call this with quest already open.
 
         This is very much not set up to do 2 quests, but this is the harder
         implementation.The other one can be added via some copypasta.
@@ -175,7 +183,7 @@ class ClickerProcess(Process):
         None.
 
         """
-        print("starting setup, {} givers".format(self.UBQgivers))
+        # print("starting setup, {} givers".format(self.UBQgivers))
         LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))
         times = self.UBQgivers - 1
         spots = [self.supQuestImg, self.coinQuestImg]
@@ -186,7 +194,7 @@ class ClickerProcess(Process):
         if times == 1:
             LZutils.findAndMove(self.abortImg, confidence=0.9)
             time.sleep(0.2)
-            pyautogui.scroll(1000)
+            pyautogui.scroll(1000) # these scrolls may break it
             check = None
             while check is None:
 
@@ -200,6 +208,7 @@ class ClickerProcess(Process):
                 time.sleep(0.3)
             # now ours is the top one
             pyautogui.scroll(-1000)
+            print("2 giver setup end")
             return
 
 
@@ -248,16 +257,28 @@ class ClickerProcess(Process):
 
 
 ## I really could do only a region check if its a performance issue
+# seems like the FOE performance is the real hangup at least on ubu-dev
     def UBQ(self):
         # DO i need to check that UBQtodo is a valid input? should already be
-
-        LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5))
+        try:
+            LZutils.findClick(self.UBQexitImg, confidence=0.8)
+            print("try")
+        except ErrorLZ.LZException:
+            pass # not needed for now?
+        finally:
+            self.Face = GameInterface.Interface()
+            LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5)) #think that offsets broken.
+            print("finally")
+        print("onnly open")
+        time.sleep(1)
         center = pyautogui.locateCenterOnScreen(self.abortImg, confidence=0.7)
+        print("pre UBQ setup")
         self.UBQsetup()
+        print("post UBQ setup")
         while self.UBQtodo > 0:
+            time.sleep(0.5)
 
-            if pyautogui.locateOnScreen(self.UBQImg, confidence=0.8, minSearchTime=1) is not None:
-                LZutils.FindGoClickAll(self.payImg)
+            if LZutils.FindGoClickAll(self.payImg):
                 time.sleep(0.3)
                 i = 1
                 while i >= 0:
@@ -283,33 +304,22 @@ class ClickerProcess(Process):
             else:
 
                 try:
-                    aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.9)
-                    spots = [0]
-                    j = 0
-                    while spots[j] is not None :
-                        spot = next(aborts, None)
-                        j += 1
-                        spots.append(spot)
-                    spot = spots[len(spots) - 2]
-                    if spot != 0:
-                        LZutils.goClick(pyautogui.center(spot))
-                    # when screen grab fails this is still 0 and error
-                    time.sleep(0.3)
+                    self.Face.ClickBottomAbort()
                     # should click the bottom abort button
+                    # returns false if it doesn't click. but i don't care right now.
 
                 except ErrorLZ.LZException:
                     pyautogui.alert(text='no abort found')
-                    break
+                    continue
                 except OSError or TypeError:
                     print("issues with UBQ finding abort button")
 
-                    break
+                    continue
         LZutils.findClick(self.UBQexitImg, confidence=0.8)
 
 
 
     def run(self):
-
 
         print("Clicker process run")
         pyautogui.alert("Starting")
@@ -346,22 +356,3 @@ class ClickerProcess(Process):
 
             timeLoop += 1
             time.sleep(15)
-
-
-"""
-
-
-
-
-
-
-
-
-
-class UBQ():
-    def __init__(self):
-
-
-# thiss  just needs to be somewhere else so i can import everything from this file and then multiprocessing might work
-
-"""
