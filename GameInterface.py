@@ -73,10 +73,10 @@ class Interface():
         xAbort = int(self.topLeftX) + 270
         pyg.moveTo(xSafe, yMid, 0.3)
         # scroll does weird things
-        ij = 0
-        while ij < 5:
-            ij += 1
-            pyg.scroll(-20)
+        # ij = 0
+        # while ij < 5:
+        #     ij += 1
+        #     pyg.scroll(-20)
         
         # Scroll down so that the bottom abort is visible.
         if pyg.locateOnScreen('Pay button.png', confidence=0.9) and watchPay:
@@ -98,7 +98,7 @@ class Interface():
         time.sleep(0.2)
         while not pyg.locateOnScreen("Abort button.png", confidence=0.85, region=reg):
             time.sleep(0.2)
-
+        time.sleep(5)
         return True
 
 # feels like iffy copypasta
@@ -133,7 +133,7 @@ class Interface():
         time.sleep(0.2)
         while not pyg.locateOnScreen("Abort button.png", confidence=0.85, region=reg):
             time.sleep(0.2)
-
+        time.sleep(1)
         return True
         
 

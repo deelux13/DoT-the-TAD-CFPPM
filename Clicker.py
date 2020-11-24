@@ -202,15 +202,18 @@ class ClickerProcess(Process):
             while check is None:
 
                 check = pyautogui.locateOnScreen(self.coinQuestImg)
+                # is the eone we are looking for on screen?
                 if check is None:
-                    LZutils.findClick(self.abortImg, confidence=0.9)
+                    self.Face.ClickTopAbort() # if not, then click abort
                 time.sleep(0.3)
             if pyautogui.center(check)[1] > pyautogui.center(pyautogui.locateOnScreen(self.abortImg, confidence=0.95))[0]:
                 #then the bottom RQ is one we want, and we just abotrt the top
-                LZutils.findClick(self.abortImg, confidence=0.7)
+                self.Face.ClickTopAbort()
                 time.sleep(0.3)
             # now ours is the top one
-            pyautogui.scroll(-1000)
+            while i < 20:
+                pyautogui.scroll(-10)
+                i += 1
             print("2 giver setup end")
             return
 
