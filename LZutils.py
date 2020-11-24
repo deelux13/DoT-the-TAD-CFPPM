@@ -176,15 +176,19 @@ def FindGoClickAll(image, confidence=0.9, delay=0.1):
     return True
 
 
+def addTuples(first, second):
+    return tuple(map(sum, zip(first, second)))
+
+
 def FindGoCollectAll(image, confidence=0.8):
     thing = pyautogui.locateOnScreen(image, confidence=confidence)
     if thing is None:
         return False
     while thing is not None:
-        pos = pyautogui.center(thing) + (0,40)
+        pos = addTuples(pyautogui.center(thing), (0,40))
         goClick(pos)
-        pyautogui.move(-100,-100, 0.02)
-        time.sleep(0.05)
+        pyautogui.move(-100,-100, 0.1)
+        time.sleep(0.1)
         thing = pyautogui.locateOnScreen(image, confidence=confidence)
     return True
 
@@ -194,7 +198,7 @@ def RestartProductions():
     if thing is None:
         return False
     while thing is not None:
-        pos = pyautogui.center(thing) + (0,40)
+        pos = addTuples(pyautogui.center(thing), (0,40))
         goClick(pos)
         pyautogui.move(-300,-300)
         time.sleep(0.5)
