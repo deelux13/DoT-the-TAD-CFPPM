@@ -194,7 +194,10 @@ class ClickerProcess(Process):
         if times == 1:
             LZutils.findAndMove(self.abortImg, confidence=0.9)
             time.sleep(0.2)
-            pyautogui.scroll(1000) # these scrolls may break it
+            i = 0
+            while i < 10:
+                pyautogui.scroll(10) # these scrolls may break it
+                i += 1
             check = None
             while check is None:
 
