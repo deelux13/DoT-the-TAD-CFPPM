@@ -79,6 +79,8 @@ class Interface():
             pyg.scroll(-20)
         
         # Scroll down so that the bottom abort is visible.
+        if pyg.locateOnScreen('Pay button.png', confidence=0.9):
+            return False
         clicked = False
         #really not sure what i'm doing.
         # i think this just passes back false if the abort hasn't loaded  yet.
@@ -91,9 +93,12 @@ class Interface():
 
         center = pyg.center(button) + (0,5) # this offset totally doesn't work.
         print(center)
-        
+        reg = (button[0] - 100, button[1] - 300, 300, 700)
         LZutils.goClick(center)
-        time.sleep(3.2)
+        time.sleep(0.2)
+        while not pyg.locateOnScreen("Abort button.png", confidence=0.85, region=reg):
+            time.sleep(0.2)
+
         return True
 
     def ClickTopAbort(self):
