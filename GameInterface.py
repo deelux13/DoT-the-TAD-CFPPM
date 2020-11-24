@@ -59,8 +59,8 @@ class Interface():
         return List # gen ran out without ending on an  overlap so we got this correctly.
             
 
-
-    def ClickBottomAbort(self):
+# watchpay had to be added so it didn't abort too early befor the pay button was visible. especially becasuse the abort is oddly slow and triggers early. 
+    def ClickBottomAbort(self, watchPay=True):
         """Literally just click the bottom abort, handles scrolling and all.
         
         This is rather slow. 
@@ -79,7 +79,7 @@ class Interface():
             pyg.scroll(-20)
         
         # Scroll down so that the bottom abort is visible.
-        if pyg.locateOnScreen('Pay button.png', confidence=0.9):
+        if pyg.locateOnScreen('Pay button.png', confidence=0.9) and watchPay:
             return False
         clicked = False
         #really not sure what i'm doing.
@@ -101,39 +101,77 @@ class Interface():
 
         return True
 
-    def ClickTopAbort(self):
+# feels like iffy copypasta
+    def ClickTopAbort(self, watchPay=False):
         xSafe = self.topLeftX + 150
         yMid = self.topLeftY + 500
         xAbort = self.topLeftX + 270
         pyg.moveTo(x=xSafe, y=yMid)
-        pyg.scroll(1000)
-        for y in range(self.topLeftY, self.aidBoardTopY, 4):
-            # Moving top to bottom
-            r, g, b = pyg.pixel(xAbort, y)
-            if r in range(111,240):
-                pyg.moveTo(xAbort, y, 0.1)
-                pyg.click()
-                break
+        
+        ij = 0
+        while ij < 5:
+            ij += 1
+            pyg.scroll(20)
+        
+        # Scroll down so that the bottom abort is visible.
+        if pyg.locateOnScreen('Pay button.png', confidence=0.9) and watchPay:
+            return False
+        clicked = False
+        #really not sure what i'm doing.
+        # i think this just passes back false if the abort hasn't loaded  yet.
+        List = self.BufferLocations("Abort button.png")
+        if len(List) < 1:
+            time.sleep(1)
+            return False
+        button = List[0]
+        # len - 1 give index of last on list
+
+        center = pyg.center(button) + (0,5) # this offset totally doesn't work.
+        print(center)
+        reg = (button[0] - 100, button[1] - 300, 300, 700)
+        LZutils.goClick(center)
+        time.sleep(0.2)
+        while not pyg.locateOnScreen("Abort button.png", confidence=0.85, region=reg):
+            time.sleep(0.2)
+
+        return True
+        
 
 
-    def ClickSecondAbort(self):
+    def ClickSecondAbort(self, watchPay=False):
         xSafe = self.topLeftX + 150
         yMid = self.topLeftY + 500
         xAbort = self.topLeftX + 270
         pyg.moveTo(x=xSafe, y=yMid)
-        pyg.scroll(1000)
-        y = self.topLeftY
-        go = False
-        while y < self.aidBoardTopY:
-            # Moving top to bottom
-            r, g, b = pyg.pixel(xAbort, y)
-            if r in range(111,240) and go == True:
-                if go == True:
-                    pyg.moveTo(xAbort, y, 0.1)
-                    pyg.click()
-                    break
+        
+        ij = 0
+        while ij < 5:
+            ij += 1
+            pyg.scroll(20)
+        pyg.scroll(-20)
+        
+        # Scroll down so that the bottom abort is visible.
+        if pyg.locateOnScreen('Pay button.png', confidence=0.9) and watchPay:
+            return False
+        clicked = False
+        #really not sure what i'm doing.
+        # i think this just passes back false if the abort hasn't loaded  yet.
+        List = self.BufferLocations("Abort button.png")
+        if len(List) < 2:
+            time.sleep(1)
+            return False
+        button = List[1]
+        # len - 1 give index of last on list
 
+        center = pyg.center(button) + (0,5) # this offset totally doesn't work.
+        print(center)
+        reg = (button[0] - 100, button[1] - 300, 300, 700)
+        LZutils.goClick(center)
+        time.sleep(0.2)
+        while not pyg.locateOnScreen("Abort button.png", confidence=0.85, region=reg):
+            time.sleep(0.2)
 
-            y += 4
+        return True
+        
 
 
