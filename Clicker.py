@@ -87,10 +87,10 @@ class ClickerProcess(Process):
             LZutils.goClick(pos)
             time.sleep(0.8)
             hits += 1
-            if hits > 7:
+            if hits > 10:
                 LZutils.findClick("Page step right.png")
                 time.sleep(0.3)
-            if hits > 12:
+            if hits > 15:
                 return True
             # TODO this really needs to be better.
             thing = pyautogui.locateOnScreen(image, confidence=confidence)
@@ -206,8 +206,11 @@ class ClickerProcess(Process):
                 if check is None:
                     self.Face.ClickTopAbort() # if not, then click abort
                 time.sleep(0.3)
+            pyautogui.alert("coin found i think")
             if pyautogui.center(check)[1] > pyautogui.center(pyautogui.locateOnScreen(self.abortImg, confidence=0.95))[0]:
-                #then the bottom RQ is one we want, and we just abotrt the top
+                '''then the bottom RQ is one we want, and we just abort the top
+                if the center of the found one is lower (more positive) than the abort button, then the top abort doesn't belong to the 
+                '''
                 self.Face.ClickTopAbort()
                 time.sleep(0.3)
             # now ours is the top one
@@ -224,7 +227,10 @@ class ClickerProcess(Process):
             # lock first quest
             LZutils.findAndMove(self.abortImg, confidence=0.8)
             time.sleep(0.2)
-            pyautogui.scroll(10000)
+            while i < 10:
+                pyautogui.scroll(10) # these scrolls may break it
+                i += 1
+            
             aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.7)
             check = None
             while check is None:
@@ -249,7 +255,10 @@ class ClickerProcess(Process):
             i = 0
             while i < 100:
                 if pyautogui.locateOnScreen(self.supQuestImg, confidence=0.7) and pyautogui.locateOnScreen(self.coinQuestImg, confidence=0.7):
-                    pyautogui.scroll(-1100)
+                    while i < 10:
+                        pyautogui.scroll(-10) # these scrolls may break it
+                        i += 1
+            
                     return
                 aborts = pyautogui.locateAllOnScreen(self.abortImg, confidence=0.95)
                 next(aborts)
@@ -303,10 +312,16 @@ class ClickerProcess(Process):
                     except:
                         pass
                     i -= 1
-                    pyautogui.scroll(1000)
+                    while i < 10:
+                        pyautogui.scroll(10) # these scrolls may break it
+                        i += 1
+                    
 
                 self.UBQtodo -= 1
-                pyautogui.scroll(-1000)
+                while i < 10:
+                    pyautogui.scroll(-10) # these scrolls may break it
+                    i += 1
+                
             else:
 
                 try:

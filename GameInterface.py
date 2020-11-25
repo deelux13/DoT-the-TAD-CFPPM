@@ -98,7 +98,7 @@ class Interface():
         time.sleep(0.2)
         while not pyg.locateOnScreen("Abort button.png", confidence=0.85, region=reg):
             time.sleep(0.2)
-        time.sleep(5)
+        time.sleep(1)
         return True
 
 # feels like iffy copypasta
@@ -170,7 +170,7 @@ class Interface():
         time.sleep(0.2)
         while not pyg.locateOnScreen("Abort button.png", confidence=0.85, region=reg):
             time.sleep(0.2)
-
+        time.sleep(1)
         return True
         
 
