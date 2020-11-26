@@ -309,12 +309,14 @@ class ClickerProcess(Process):
                     try:
                         LZutils.findClick(self.closeImg)
                         pyautogui.moveTo(center)
-                    except:
-                        pass
-                    i -= 1
-                    while i < 10:
-                        pyautogui.scroll(10) # these scrolls may break it
-                        i += 1
+                        print('tried')
+                    except ErrorLZ.LZException:
+                        break
+                    finally:
+                        i -= 1
+                        while i < 10:
+                            pyautogui.scroll(10) # these scrolls may break it
+                            i += 1
                     
 
                 self.UBQtodo -= 1
