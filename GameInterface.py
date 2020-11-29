@@ -19,7 +19,7 @@ def cycle():
 class Interface():
     """The Game facing interface aka pixel finder and other utils."""
     def __init__(self):
-        self.topLeft = pyg.locateOnScreen("Top Left corner.png", confidence=0.8)
+        self.topLeft = pyg.locateOnScreen("Top Left corner.png", confidence=0.55)
         self.RightEdgeQuestX = self.topLeft[0] + 690
         self.QuestMiddle = self.RightEdgeQuestX//2
         self.topLeftX = self.topLeft[0]
