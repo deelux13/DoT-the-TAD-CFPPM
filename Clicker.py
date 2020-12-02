@@ -311,7 +311,7 @@ class ClickerProcess(Process):
                         pyautogui.moveTo(center)
                         print('tried')
                     except ErrorLZ.LZException:
-                        continue
+                        pass
                     finally:
                         i -= 1
                         while i < 5:
