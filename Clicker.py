@@ -303,27 +303,29 @@ class ClickerProcess(Process):
                     if found > i:
                         time.sleep(0.3)
                         self.UBQsetup()
-                        continue
+                        break
                     # first collect expects one, any more triggers the setup
                     # second scrolls up but expects none.
                     try:
+                        print('tried')
                         LZutils.findClick(self.closeImg)
                         pyautogui.moveTo(center)
-                        print('tried')
                     except ErrorLZ.LZException:
                         pass
                     finally:
                         i -= 1
-                        while i < 5:
+                        j = 0
+                        while j < 5:
                             pyautogui.scroll(10) # these scrolls may break it
-                            i += 1
+                            j += 1
                     
 
                 self.UBQtodo -= 1
                 time.sleep(0.3)
-                while i < 7:
+                nm = 0 
+                while nm < 7:
                     pyautogui.scroll(-10) # these scrolls may break it
-                    i += 1
+                    nm += 1
                 
             else:
 
