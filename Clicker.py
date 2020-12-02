@@ -297,13 +297,13 @@ class ClickerProcess(Process):
                 time.sleep(0.3)
                 i = 1
                 while i >= 0:
-
+                    # checks twice and scrolls
                     found = LZutils.FindGoClickAll(self.collect,
                                                    confidence=0.8)
                     if found > i:
                         time.sleep(0.3)
                         self.UBQsetup()
-                        break
+                        continue
                     # first collect expects one, any more triggers the setup
                     # second scrolls up but expects none.
                     try:
@@ -311,16 +311,17 @@ class ClickerProcess(Process):
                         pyautogui.moveTo(center)
                         print('tried')
                     except ErrorLZ.LZException:
-                        break
+                        continue
                     finally:
                         i -= 1
-                        while i < 10:
+                        while i < 5:
                             pyautogui.scroll(10) # these scrolls may break it
                             i += 1
                     
 
                 self.UBQtodo -= 1
-                while i < 10:
+                time.sleep(0.3)
+                while i < 7:
                     pyautogui.scroll(-10) # these scrolls may break it
                     i += 1
                 
