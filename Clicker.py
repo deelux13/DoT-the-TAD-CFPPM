@@ -187,7 +187,11 @@ class ClickerProcess(Process):
         LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))
         times = self.UBQgivers - 1
         spots = [self.supQuestImg, self.coinQuestImg]
-        if times == 0:
+        if times == 0:# one giver
+            nm = 0
+            while nm < 5:
+                pyautogui.scroll(-10)
+                nm += 1
             return
 
         # 2 givers
