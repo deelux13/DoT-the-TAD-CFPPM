@@ -210,7 +210,7 @@ class ClickerProcess(Process):
                 if check is None:
                     self.Face.ClickTopAbort() # if not, then click abort
                 time.sleep(0.3)
-            pyautogui.alert("coin found i think")
+            # pyautogui.alert("coin found i think")
             if pyautogui.center(check)[1] > pyautogui.center(pyautogui.locateOnScreen(self.abortImg, confidence=0.95))[0]:
                 '''then the bottom RQ is one we want, and we just abort the top
                 if the center of the found one is lower (more positive) than the abort button, then the top abort doesn't belong to the 
@@ -225,7 +225,7 @@ class ClickerProcess(Process):
             return
 
 
-
+        # not actually able to test 3 giver right now, TAD doesn't have it
         # 3 givers active
         if times == 2:
             # lock first quest
@@ -244,13 +244,13 @@ class ClickerProcess(Process):
                 have one of them in the bottom slot it shouldnt be normally, since
                 we normally just finished a UBQ in the bottom slot
                 """
-                check = pyautogui.locateOnScreen(self.supQuestImg)
+                check = pyautogui.locateOnScreen(self.supQuestImg, confidence=0.9)
                 if check is None:
-                    check = pyautogui.locateOnScreen(self.coinQuestImg)
+                    check = pyautogui.locateOnScreen(self.coinQuestImg, confidence=0.9)
                 if check is None:
                     LZutils.findClick(self.abortImg, confidence=0.7)
                 time.sleep(0.3)
-            #now we have one onscreen v vb
+            #now we have one onscreen but might not be on top
             if pyautogui.center(check)[1] > pyautogui.center(pyautogui.locateOnScreen(self.abortImg, confidence=0.7))[1]:
                 #then the bottom RQ is one we want, and we just abotrt the top
                 LZutils.findClick(self.abortImg, confidence=0.7)
