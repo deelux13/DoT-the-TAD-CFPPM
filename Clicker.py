@@ -205,7 +205,7 @@ class ClickerProcess(Process):
             check = None
             while check is None:
 
-                check = pyautogui.locateOnScreen(self.coinQuestImg)
+                check = pyautogui.locateOnScreen(self.coinQuestImg, confidence=0.9)
                 # is the eone we are looking for on screen?
                 if check is None:
                     self.Face.ClickTopAbort() # if not, then click abort
