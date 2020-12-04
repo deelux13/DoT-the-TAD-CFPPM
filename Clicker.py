@@ -296,6 +296,11 @@ class ClickerProcess(Process):
         print("post UBQ setup")
         while self.UBQtodo > 0:
             time.sleep(0.5)
+            nm = 0 
+            while nm < 7:
+                pyautogui.scroll(-10) # these scrolls may break it
+                nm += 1
+                #safety scroll
 
             if LZutils.FindGoClickAll(self.payImg):
                 time.sleep(0.3)
