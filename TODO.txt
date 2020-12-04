@@ -60,6 +60,8 @@ seems like i need to rewrite UBQ
 
 the scrolls break stuff? fix it?
 
+the 2 giver never checks to see if it is still active. idk if 2 giver setup will detect correctly when the setup tries to load but the coin quest already has progress.
+
 """
 
 """
