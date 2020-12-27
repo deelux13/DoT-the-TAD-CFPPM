@@ -48,8 +48,8 @@ class Interface():
             spot = next(gen, None)
             if spot is None:
                 return List
-            print(last)
-            print(spot)
+         #   print(last)
+         #   print(spot)
             while LZutils.OverlapDetect(last, spot, Img):
                 spot =  next(gen, None)
                 if spot is None:
@@ -69,7 +69,7 @@ class Interface():
         it closed."""
         xSafe = self.topLeftX + 150
         yMid = self.topLeftY + 300
-        print(self.topLeftY, "top offset")
+       # print(self.topLeftY, "top offset")
         xAbort = int(self.topLeftX) + 270
         pyg.moveTo(xSafe, yMid, 0.3)
         # scroll does weird things
@@ -92,7 +92,7 @@ class Interface():
         # len - 1 give index of last on list
 
         center = pyg.center(button) + (0,5) # this offset totally doesn't work.
-        print(center)
+      #  print(center)
         reg = (button[0] - 100, button[1] - 300, 300, 700)
         LZutils.goClick(center)
         time.sleep(0.2)
@@ -127,7 +127,7 @@ class Interface():
         # len - 1 give index of last on list
 
         center = pyg.center(button) + (0,5) # this offset totally doesn't work.
-        print(center)
+      #  print(center)
         reg = (button[0] - 100, button[1] - 300, 300, 700)
         LZutils.goClick(center)
         time.sleep(0.2)
@@ -164,7 +164,7 @@ class Interface():
         # len - 1 give index of last on list
 
         center = pyg.center(button) + (0,5) # this offset totally doesn't work.
-        print(center)
+      #  print(center)
         reg = (button[0] - 100, button[1] - 300, 300, 700)
         LZutils.goClick(center)
         time.sleep(0.2)

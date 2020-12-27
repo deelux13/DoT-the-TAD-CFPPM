@@ -19,8 +19,8 @@ def findAndMove(file, confidence=.9):
     pyautogui.moveTo(pyautogui.center(pyautogui.locateOnScreen(file, confidence=confidence)))
 
 def OverlapDetect(first, second, refImg):
-    print("util first, ", first)
-    print("util 2nd, ", second)
+  #  print("util first, ", first)
+  #  print("util 2nd, ", second)
     Width, Height = refImg.size
     if second[0] - first[0] < Width and second[1] - first[1] < Height:
         return True
@@ -198,10 +198,11 @@ def RestartProductions():
     if thing is None:
         return False
     while thing is not None:
-        pos = addTuples(pyautogui.center(thing), (0,40))
+        pos = addTuples(pyautogui.center(thing), (0,45))
         goClick(pos)
-        pyautogui.move(-300,-300)
-        time.sleep(0.5)
+        time.sleep(0.1)
+        pyautogui.move(-30,-30)
+        time.sleep(0.3)
         try:
             findClick("5 min production.png")
         except ErrorLZ.LZException:
@@ -219,7 +220,7 @@ def findClick(image, confidence=.9, offset=(0,0)):
         raise ErrorLZ.LZException("'{}' Not found on screen".format(image))
     pos = pyautogui.center(rect)
     pos = pos + offset
-    print(pos)
+   # print(pos)
     goClick(pos)
 
 #i really don't think its worth my effort to make a function for 2 lines...

@@ -160,7 +160,7 @@ class ClickerProcess(Process):
 
         """
         time.sleep(3)
-        print("start")
+       # print("start")
         i = 0
         while i < 2:
             for Img in self.collections:
@@ -297,6 +297,8 @@ class ClickerProcess(Process):
         while self.UBQtodo > 0:
             time.sleep(0.5)
             nm = 0 
+            if self.UBQtodo % 7 == 0:
+                print(f'{self.UBQtodo} of {self.totalUBQ} still left to do {time.asctime( time.localtime(time.time()) )}.')
             while nm < 7:
                 pyautogui.scroll(-10) # these scrolls may break it
                 nm += 1
@@ -316,7 +318,7 @@ class ClickerProcess(Process):
                     # first collect expects one, any more triggers the setup
                     # second scrolls up but expects none.
                     try:
-                        print('tried')
+                       # print('tried')
                         LZutils.findClick(self.closeImg)
                         pyautogui.moveTo(center)
                     except ErrorLZ.LZException:
@@ -360,7 +362,7 @@ class ClickerProcess(Process):
         pyautogui.alert("Starting")
         tic = time.perf_counter()
         timeLoop = 0
-        totalUBQ = self.UBQtodo
+        self.totalUBQ = self.UBQtodo #the wrong way to handle this. setting the objective one to the value of the one that changes.
         try:
             self.UBQ()
         except ErrorLZ.LZException:
@@ -372,7 +374,8 @@ class ClickerProcess(Process):
         # runs however many ubqs were told in __INIT__
         toc = time.perf_counter()
         if self.DataCol == 'Yes':
-            pyautogui.alert(text=f'{totalUBQ} UBQs took {toc - tic:0.4f} seconds i think', title=f'{(toc - tic)//60} minutes maybe')
+            pyautogui.alert(text=f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think', title=f'{(toc - tic)//60} minutes maybe')
+        print(f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think {(toc - tic)//60} minutes maybe')
 
         while True:
             self.Collect()
