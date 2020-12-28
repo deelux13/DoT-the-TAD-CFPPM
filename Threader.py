@@ -37,6 +37,7 @@ class Threader():
     Running = [0]
     Processes = []
     Interrupts = []
+    Going = True
 
     def __init__(self):
         print("Processer init")

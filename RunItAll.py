@@ -5,6 +5,8 @@ from os import getcwd
 import pyautogui
 import numpy
 import multiprocessing
+import time
+from numpy import *
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
@@ -15,5 +17,7 @@ if __name__ == "__main__":
         Process = Clicker.ClickerProcess()
         print("clicker initiated in with")
         thd.Trigger(Process)
+        while True:
+            time.sleep(400)
 
 

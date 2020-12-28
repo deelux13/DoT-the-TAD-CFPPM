@@ -1,0 +1,4 @@
+pyinstaller RunItAll.py -d all -y --hiddenimport pynput.keyboard._win32 --hiddenimport pynput.mouse._win32 --noupx
+C:\Users\jredl\Documents\Forge_of_Empires\DoT-the-TAD-CFPPM\dist\RunItAll\RunItAll.exe
+pause
+pyinstaller RunItAll.py -d all -y --hiddenimport pynput.keyboard._win32 --hiddenimport pynput.mouse._win32 -c --noupx
