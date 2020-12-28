@@ -3,15 +3,17 @@ import Threader as THd
 import Clicker
 from os import getcwd
 import pyautogui
+import numpy
+import multiprocessing
 
-def main():
-    if __name__ == "__main__":
-        print(getcwd())
-        
-        with THd.Threader() as thd:
-            Process = Clicker.ClickerProcess()
-            thd.Trigger(Process)
+if __name__ == "__main__":
+    multiprocessing.freeze_support()
+    print(getcwd())
+    
+    with THd.Threader() as thd:
+        print("in with")
+        Process = Clicker.ClickerProcess()
+        print("clicker initiated in with")
+        thd.Trigger(Process)
 
 
-
-main()
