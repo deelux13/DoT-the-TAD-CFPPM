@@ -17,7 +17,8 @@ class ClickerProcess(Process):
     """Process that contains all the clicking logic and possibly all
     the menu too."""
 
-    def __init__(self):
+    def __init__(self, ThreadHandler):
+        self.keyQueue = ThreadHandler.keyQueue
         super(ClickerProcess, self).__init__()
         self.moveLeftallimage = "Skip left arrow.png"
         self.moveRightpageimage = "Page right arrow.png"
