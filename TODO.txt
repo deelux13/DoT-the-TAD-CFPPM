@@ -62,6 +62,11 @@ the scrolls break stuff? fix it?
 
 the 2 giver never checks to see if it is still active. idk if 2 giver setup will detect correctly when the setup tries to load but the coin quest already has progress.
 
+
+Add game interface move the budget over there. 
+move the ubq things. yeah.
+so that the clicking can be tracked better and all.
+also the timing and all.
 """
 
 """
