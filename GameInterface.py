@@ -7,6 +7,7 @@ Created on Fri Nov 13 14:25:25 2020
 import pyautogui as pyg
 import time
 import LZutils
+import ErrorLZ
 from PIL import Image
 
 
@@ -19,6 +20,12 @@ def cycle():
 class Interface():
     """The Game facing interface aka pixel finder and other utils."""
     def __init__(self):
+        self.QuestOpenImg = "Story quest.png"
+        self.collect = "Collect button.png"
+        self.payImg = "Pay button.png"
+        self.UBQImg = "UBQ identify2.png"
+        self.abortImg = "Abort button.png"
+
         self.topLeft = pyg.locateOnScreen("Top Left corner.png", confidence=0.55)
         self.RightEdgeQuestX = self.topLeft[0] + 690
         self.QuestMiddle = self.RightEdgeQuestX//2
@@ -31,6 +38,192 @@ class Interface():
 
     def __enter__(self):
         pass
+
+
+
+    def UBQsetup(self):
+        """Put the supply and coin gather quests at the top.
+        
+        Please only call this with quest already open.
+
+        This is very much not set up to do 2 quests, but this is the harder
+        implementation.The other one can be added via some copypasta.
+
+        Returns
+        -------
+        None.
+
+        """
+        # print("starting setup, {} givers".format(self.UBQgivers))
+        LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))
+        times = self.UBQgivers - 1
+        spots = [self.supQuestImg, self.coinQuestImg]
+        if times == 0:# one giver
+            nm = 0
+            while nm < 5:
+                pyg.scroll(-10)
+                nm += 1
+            return
+
+        # 2 givers
+        if times == 1:
+            LZutils.findAndMove(self.abortImg, confidence=0.9)
+            time.sleep(0.2)
+            i = 0
+            while i < 10:
+                pyg.scroll(10) # these scrolls may break it
+                i += 1
+            check = None
+            while check is None:
+
+                check = pyg.locateOnScreen(self.coinQuestImg, confidence=0.9)
+                # is the eone we are looking for on screen?
+                if check is None:
+                    self.Face.ClickTopAbort() # if not, then click abort
+                time.sleep(0.3)
+            # pyautogui.alert("coin found i think")
+            if pyg.center(check)[1] > pyg.center(pyg.locateOnScreen(self.abortImg, confidence=0.95))[0]:
+                '''then the bottom RQ is one we want, and we just abort the top
+                if the center of the found one is lower (more positive) than the abort button, then the top abort doesn't belong to the 
+                '''
+                self.Face.ClickTopAbort()
+                time.sleep(0.3)
+            # now ours is the top one
+            while i < 20:
+                pyg.scroll(-10)
+                i += 1
+            print("2 giver setup end")
+            return
+
+
+        # not actually able to test 3 giver right now, TAD doesn't have it
+        # 3 givers active
+        if times == 2:
+            # lock first quest
+            LZutils.findAndMove(self.abortImg, confidence=0.8)
+            time.sleep(0.2)
+            while i < 10:
+                pyg.scroll(10) # these scrolls may break it
+                i += 1
+            
+            aborts = pyg.locateAllOnScreen(self.abortImg, confidence=0.7)
+            check = None
+            while check is None:
+                """
+                # get the first on on the screen
+                # i figure i'm missing something, but i'm assuming that we don't
+                have one of them in the bottom slot it shouldnt be normally, since
+                we normally just finished a UBQ in the bottom slot
+                """
+                check = pyg.locateOnScreen(self.supQuestImg, confidence=0.9)
+                if check is None:
+                    check = pyg.locateOnScreen(self.coinQuestImg, confidence=0.9)
+                if check is None:
+                    LZutils.findClick(self.abortImg, confidence=0.7)
+                time.sleep(0.3)
+            #now we have one onscreen but might not be on top
+            if pyg.center(check)[1] > pyg.center(pyg.locateOnScreen(self.abortImg, confidence=0.7))[1]:
+                #then the bottom RQ is one we want, and we just abotrt the top
+                LZutils.findClick(self.abortImg, confidence=0.7)
+                time.sleep(0.3)
+            # now the top one is the one we want
+            i = 0
+            while i < 100:
+                if pyg.locateOnScreen(self.supQuestImg, confidence=0.7) and pyg.locateOnScreen(self.coinQuestImg, confidence=0.7):
+                    while i < 10:
+                        pyg.scroll(-10) # these scrolls may break it
+                        i += 1
+            
+                    return
+                aborts = pyg.locateAllOnScreen(self.abortImg, confidence=0.95)
+                next(aborts)
+                spot = next(aborts)
+
+                LZutils.goClick(pyg.center(spot))
+                time.sleep(0.3)
+
+
+            raise ErrorLZ.LZException("Two quests not found")
+
+
+## I really could do only a region check if its a performance issue
+# seems like the FOE performance is the real hangup at least on ubu-dev
+    def UBQ(self):
+        # DO i need to check that UBQtodo is a valid input? should already be
+        try:
+            LZutils.findClick(self.UBQexitImg, confidence=0.8)
+            print("try")
+        except ErrorLZ.LZException:
+            pass # not needed for now?
+        finally:
+            LZutils.findClick(self.QuestOpenImg, 0.6, (0,-5)) #think that offsets broken.
+            print("finally")
+        print("onnly open")
+        time.sleep(1)
+        center = pyg.locateCenterOnScreen(self.abortImg, confidence=0.7)
+        print("pre UBQ setup")
+        self.UBQsetup()
+        print("post UBQ setup")
+        while self.UBQtodo > 0:
+            time.sleep(0.5)
+            nm = 0 
+            if self.UBQtodo % 7 == 0:
+                print(f'{self.UBQtodo} of {self.totalUBQ} still left to do {time.asctime( time.localtime(time.time()) )}.')
+            while nm < 7:
+                pyg.scroll(-10) # these scrolls may break it
+                nm += 1
+                #safety scroll
+
+            if LZutils.FindGoClickAll(self.payImg):
+                time.sleep(0.3)
+                i = 1
+                while i >= 0:
+                    # checks twice and scrolls
+                    found = LZutils.FindGoClickAll(self.collect,
+                                                   confidence=0.8)
+                    if found > i:
+                        time.sleep(0.3)
+                        self.UBQsetup()
+                        break
+                    # first collect expects one, any more triggers the setup
+                    # second scrolls up but expects none.
+                    try:
+                       # print('tried')
+                        LZutils.findClick(self.closeImg)
+                        pyg.moveTo(center)
+                    except ErrorLZ.LZException:
+                        pass
+                    finally:
+                        i -= 1
+                        j = 0
+                        while j < 5:
+                            pyg.scroll(10) # these scrolls may break it
+                            j += 1
+                    
+
+                self.UBQtodo -= 1
+                time.sleep(0.3)
+                nm = 0 
+                while nm < 7:
+                    pyg.scroll(-10) # these scrolls may break it
+                    nm += 1
+                
+            else:
+
+                try:
+                    self.Face.ClickBottomAbort()
+                    # should click the bottom abort button
+                    # returns false if it doesn't click. but i don't care right now.
+
+                except ErrorLZ.LZException:
+                    pyg.alert(text='no abort found')
+                    continue
+                except OSError or TypeError:
+                    print("issues with UBQ finding abort button")
+
+                    continue
+        LZutils.findClick(self.UBQexitImg, confidence=0.8)
+
 
 
     def BufferLocations(self, img):
