@@ -6,38 +6,27 @@ Created on Thu Oct 22 21:12:16 2020
 """
 
 
-import pyautogui
-from multiprocessing import Process
+import pyautogui as pyg
+from multiprocessing import Process, Queue
 import time
 import sys
 from pynput.keyboard import Key, Listener
-from functools import wraps
 import ErrorLZ
 
-# def Wrap(self, func):
-#     @wraps(func)
-#     def inner():
-#         try:
-#             func()
-#         except:
-#             raise LZException("Threader target error i think")
-#         self.__exit__()
-#     return inner
 
 
-# class LZprocess(Process):
-#     def __init__(self):
-#         super(LZprocess, self).__init__()
-
-
-class Threader():
-    """Makes a new Process to listen for a double esc and stops Process
+class ThreadHandler():
+    """Makes a new Process to listen for a double esc and stops Process.
+    depends on passing in callable that has an active .terminate()
+    
+    Should only get triggered once, more should error.
 
     """
     Running = [0]
     Processes = []
     Interrupts = []
     Going = True
+    keyQueue = Queue(10)
 
     def __init__(self):
         print("Processer init")
@@ -47,6 +36,8 @@ class Threader():
         self.Running[0] = 1
 
         self.Listener = Interrupt(self)
+        self.Listener.run()
+        print("listener started")
         # in _init so that errors don't kill it as hard?.. also only need one listener.
 
     def __enter__(self):
@@ -58,41 +49,23 @@ class Threader():
 
 
     def addProcess(self, Process):
-        print("Processer add Process")
-        Process.start()
-        print('Process started')
-        self.Processes.append(Process)
-
-
-    def Trigger(self, target):
-        """Runs a callable with a key listener for esc x2 to exit
-
+        """
+        Adds Process to the ThreadHandler and starts it.
 
         Parameters
         ----------
-        target : Process object
-            to be run.
-        args : tuple, optional
-            args for the callable. The default is ().
+        Process : TYPE
+            DESCRIPTION.
 
         Returns
         -------
         None.
 
         """
-
-
-        print("Processer trigger cent")
-        print("target = ", target)
-
-        # I feel like the central process MAYBE could use a with.. but idk
-        CentralProcess = target
-        self.addProcess(CentralProcess)
-        print("addprocess call completed")
-        self.Listener.run()
-        # self.Listener.join()
-        # this is not needed if run is called, but then the main thread is locked to the listener. don't think i mind
-        print("listener started")
+        print("Processer add Process")
+        Process.start()
+        print('Process started')
+        self.Processes.append(Process)
 
     def stop(self):
         self.__exit__("Stopped by self.Stop()", "fake", "fake")
@@ -134,6 +107,7 @@ class Interrupt(Process):
 
     def keyUp(self, key):
         print(key)
+        self.Processer.keyQueue.put(key)
         # pyautogui.move(100,100)
         # if key == Key.enter:
         #     pyautogui.alert(text='running, enter was pressed')
