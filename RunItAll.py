@@ -14,7 +14,7 @@ if __name__ == "__main__":
     
     with THd.Threader() as thd:
         print("in with")
-        Process = Clicker.ClickerProcess(thd)
+        Process = Clicker.Brains(thd)
         print("clicker initiated in with")
         thd.Trigger(Process)
         while True:

@@ -25,6 +25,28 @@ class Interface():
         self.payImg = "Pay button.png"
         self.UBQImg = "UBQ identify2.png"
         self.abortImg = "Abort button.png"
+        self.moveLeftallimage = "Skip left arrow.png"
+        self.moveRightpageimage = "Page right arrow.png"
+        self.aidimage = "Aid button.png"
+        self.tavernVisitimage = "Visit Tavern.png"
+        self.coinImg = "coin to collect.png"
+        self.coinStarImg = "coin to collect motivated.png"
+        self.suppliesImg = "Supply collect.png"
+        self.buildingSleepImg = "building sleeping.png"
+        self.min5Production = "5 min production.png"
+        self.suppliesStarImg = "supplies motivated.png"
+        self.QuestOpenImg = "Story quest.png"
+        self.collect = "Collect button.png"
+        self.payImg = "Pay button.png"
+        self.UBQImg = "UBQ identify2.png"
+        self.abortImg = "Abort button.png"
+        self.supQuestImg = "Supplies quest identify.png"
+        self.coinQuestImg = "Coin quest identify.png"
+        self.UBQexitImg = 'UBQ exit button.png'
+        self.closeImg = "Close button.png"
+        
+        self.collections = [self.coinImg, self.coinStarImg,
+                            self.suppliesImg, self.suppliesStarImg]
 
         self.topLeft = pyg.locateOnScreen("Top Left corner.png", confidence=0.55)
         self.RightEdgeQuestX = self.topLeft[0] + 690
