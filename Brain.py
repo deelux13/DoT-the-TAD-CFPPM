@@ -11,7 +11,8 @@ import LZutils
 import time
 import ErrorLZ
 import GameInterface
-
+import pickle
+    
 
 class Brains(Process):
     """Process that contains all the clicking logic and possibly all
@@ -34,7 +35,10 @@ class Brains(Process):
         """just asks if/how many UBQs"""
         self.UBQtodo = 0
         test = True
-
+        self.UBQgivers = int(pyg.confirm(text='How many quest givers?',buttons=['1', '2', '3']))
+        self.UBQinfinite = pyg.confirm(text='Do you want UBQs indefinitely? select No to choose a number', buttons=["Yes", "No"])
+        if self.UBQinfinite == "Yes":
+            self.UBQtotal = -1
         while test:
             ubqs = pyg.prompt(text='How many UBQs?')
             if ubqs is None:
@@ -45,7 +49,6 @@ class Brains(Process):
             except ValueError:
                 pyg.alert(text="Not a number")
 
-        self.UBQgivers = int(pyg.confirm(text='How many quest givers?',buttons=['1', '2', '3']))
         
 
 
@@ -62,16 +65,14 @@ class Brains(Process):
         self.DataCol = pyg.confirm(text='Do UBQ timing? aid is currently skipped if this is chosen', buttons=["Yes", "No"])
 
 
-    def UBQmode(self):
-        if self.Face.State() != "UBQ ready to go":
-            self.Face.UBQsetup()
-        
-        
-
+    '''
+    file open()
+    pickle.dump
+    '''
 
 
     def run(self):
-
+        # TODO do the pickle preference thing
         self.HoodAsk()
         
         self.UBQask()
@@ -80,13 +81,9 @@ class Brains(Process):
         pyg.alert("Starting")
         self.Face = GameInterface.Interface()
         tic = time.perf_counter()
-        timeLoop = 0
-        self.totalUBQ = self.UBQtodo #the wrong way to handle this. setting the objective one to the value of the one that changes.
-        try:
-            self.UBQmode()
-        except ErrorLZ.LZException:
-            print("something went wrong in UBQ")
-
+        
+        
+        self.Face.UBQmode(self.UBQtotal, self.UBQgivers)
 
         # should make this be the not found error but didn't go dig to find it
 
@@ -96,27 +93,8 @@ class Brains(Process):
             pyg.alert(text=f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think', title=f'{(toc - tic)//60} minutes maybe')
         print(f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think {(toc - tic)//60} minutes maybe')
 
-        while True:
-            self.Collect()
-            if timeLoop % 13 == 0:
-                try:
-                    self.Aid()
-                except ErrorLZ.LZException:
-                    timeLoop -= 1
-
-
-            ready = True
-            while ready:
-                time.sleep(15)
-                if pyg.locateOnScreen("coin to collect.png", confidence=0.6) is not None or pyg.locateOnScreen("Supply collect.png", confidence=0.6) is not None:
-                    ready = False
-
-            timeLoop += 1
-            time.sleep(15)
-
-
-
-
+        self.Face.CollectMode()
+        
 
 
 

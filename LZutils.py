@@ -218,8 +218,7 @@ def findClick(image, confidence=.9, offset=(0,0)):
     rect = pyautogui.locateOnScreen(image, confidence=confidence)
     if rect == None:
         raise ErrorLZ.LZException("'{}' Not found on screen".format(image))
-    pos = pyautogui.center(rect)
-    pos = pos + offset
+    pos = addTuples(pyautogui.center(rect), offset)
    # print(pos)
     goClick(pos)
 
