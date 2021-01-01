@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import Threader as THd
-import Clicker
+import Brain
 from os import getcwd
 import pyautogui
 import numpy
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     
     with THd.Threader() as thd:
         print("in with")
-        Process = Clicker.Brains(thd)
+        Process = Brain.Brains(thd)
         print("clicker initiated in with")
         thd.Trigger(Process)
         while True:
