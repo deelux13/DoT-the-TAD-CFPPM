@@ -5,7 +5,7 @@ Created on Fri Nov  6 09:56:44 2020
 @author: Glen
 """
 
-import pyautogui
+import pyautogui as pyg
 from multiprocessing import Process
 import LZutils
 import time
@@ -13,38 +13,20 @@ import ErrorLZ
 import GameInterface
 
 
-class ClickerProcess(Process):
+class Brains(Process):
     """Process that contains all the clicking logic and possibly all
-    the menu too."""
+    the menu too.
+    
+    This only contains the brains of when to what. i think. that actual clicking logic  will be is contained in the game interface. 
+    The interface knows where things are and clicks them. this process brains is the what to click when brains and monitors keyboard input.
+    
+    """
 
     def __init__(self, ThreadHandler):
+        super(Brains, self).__init__()
+
         self.keyQueue = ThreadHandler.keyQueue
-        super(ClickerProcess, self).__init__()
-        self.moveLeftallimage = "Skip left arrow.png"
-        self.moveRightpageimage = "Page right arrow.png"
-        self.aidimage = "Aid button.png"
-        self.tavernVisitimage = "Visit Tavern.png"
-        self.Hood()
-        self.coinImg = "coin to collect.png"
-        self.coinStarImg = "coin to collect motivated.png"
-        self.suppliesImg = "Supply collect.png"
-        self.buildingSleepImg = "building sleeping.png"
-        self.min5Production = "5 min production.png"
-        self.suppliesStarImg = "supplies motivated.png"
-        self.collections = [self.coinImg, self.coinStarImg,
-                            self.suppliesImg, self.suppliesStarImg]
-        self.QuestOpenImg = "Story quest.png"
-        self.collect = "Collect button.png"
-        self.payImg = "Pay button.png"
-        self.UBQImg = "UBQ identify2.png"
-        self.abortImg = "Abort button.png"
-        self.UBQask()
-        self.supQuestImg = "Supplies quest identify.png"
-        self.coinQuestImg = "Coin quest identify.png"
-        self.UBQexitImg = 'UBQ exit button.png'
-        self.closeImg = "Close button.png"
-        self.data()
-        pyautogui.PAUSE = 0
+        pyg.PAUSE = 0
 
     def UBQask(self):
 
@@ -52,7 +34,7 @@ class ClickerProcess(Process):
         test = True
 
         while test:
-            ubqs = pyautogui.prompt(text='How many UBQs?')
+            ubqs = pyg.prompt(text='How many UBQs?')
             if ubqs is None:
                 test = False
                 break
@@ -60,31 +42,31 @@ class ClickerProcess(Process):
                 self.UBQtodo = int(ubqs)
                 test = False
             except ValueError:
-                pyautogui.alert(text="Not a number")
+                pyg.alert(text="Not a number")
 
-        self.UBQgivers = int(pyautogui.confirm(text='How many quest givers?',buttons=['1', '2', '3']))
+        self.UBQgivers = int(pyg.confirm(text='How many quest givers?',buttons=['1', '2', '3']))
 
 
     def Hood(self):
         """"Pull yes/no for hood aid and populate aidtab list"""
-        pyautogui.alert(text='Hood will not be aided')
+        pyg.alert(text='Hood will not be aided')
         self.tabs = ["Guild", "Friend"]
-        if pyautogui.prompt(text='Do you want to aid the available aids in your hood? type "YES" only if you\'re done being the TAD') == 'YES':
+        if pyg.prompt(text='Do you want to aid the available aids in your hood? type "YES" only if you\'re done being the TAD') == 'YES':
             self.tabs.append("Hood")
         # not sure how to add hood option, don't want it to accidentally trigger for DoT
 
 
     def data(self):
-        self.DataCol = pyautogui.confirm(text='Do UBQ timing? aid is currently skipped if this is chosen', buttons=["Yes", "No"])
+        self.DataCol = pyg.confirm(text='Do UBQ timing? aid is currently skipped if this is chosen', buttons=["Yes", "No"])
 
     def AidClickAll(self, image, confidence=0.9):
         """Clicking routine for the Aid method."""
-        thing = pyautogui.locateOnScreen(image, confidence=confidence)
+        thing = pyg.locateOnScreen(image, confidence=confidence)
         if thing is None:
             return False
         hits = 0
         while thing is not None:
-            pos = pyautogui.center(thing)
+            pos = pyg.center(thing)
             LZutils.goClick(pos)
             time.sleep(0.8)
             hits += 1
@@ -94,7 +76,7 @@ class ClickerProcess(Process):
             if hits > 15:
                 return True
             # TODO this really needs to be better.
-            thing = pyautogui.locateOnScreen(image, confidence=confidence)
+            thing = pyg.locateOnScreen(image, confidence=confidence)
             # last thing in the loop is to prep it for next loop
         return True
 
@@ -114,9 +96,9 @@ class ClickerProcess(Process):
                     LZutils.FindGoClickAll(self.tavernVisitimage,
                                            confidence=0.95, delay=0.8)
 
-                edge = pyautogui.locateOnScreen(
+                edge = pyg.locateOnScreen(
                     'left edge of player aid board.png', confidence=0.85)
-                end = pyautogui.locateOnScreen(
+                end = pyg.locateOnScreen(
                     'Right edge of player aid board.png', confidence=0.85)
                 # edge of top left in 10 down 5, to end
                 if edge is None or end is None:
@@ -126,24 +108,24 @@ class ClickerProcess(Process):
                                end[0], end[1]+end[3]-5-edge[1])
                 # TODO what is this mess?
 
-                im = pyautogui.screenshot(region=Checkregion)
+                im = pyg.screenshot(region=Checkregion)
                 LZutils.findClick(self.moveRightpageimage)
                 time.sleep(2)
                 # TODO thses folowing iffs are useless since the failed aid
                 # logic is in the ClickAll
-                if pyautogui.locateOnScreen("Visit Not Possible.png",
+                if pyg.locateOnScreen("Visit Not Possible.png",
                                             confidence=0.85) is not None:
 
                     LZutils.goClick("No Visit Okay button.png")
 
-                if pyautogui.locateOnScreen("Failed polish.png",
+                if pyg.locateOnScreen("Failed polish.png",
                                             confidence=0.85) is not None:
                     LZutils.goClick("No Visit Okay button.png")
 
                 if not Aided:
                     time.sleep(2)
 
-                    testerDat = pyautogui.locateOnScreen(im,
+                    testerDat = pyg.locateOnScreen(im,
                                                          confidence=0.95)
                     time.sleep(1)
                     # Cuz if we find the same shot, the end of the list
@@ -176,8 +158,11 @@ class ClickerProcess(Process):
 
     def run(self):
 
+        self.Hood()
+        self.UBQask()
+        self.data()
         print("Clicker process run")
-        pyautogui.alert("Starting")
+        pyg.alert("Starting")
         tic = time.perf_counter()
         timeLoop = 0
         self.totalUBQ = self.UBQtodo #the wrong way to handle this. setting the objective one to the value of the one that changes.
@@ -192,7 +177,7 @@ class ClickerProcess(Process):
         # runs however many ubqs were told in __INIT__
         toc = time.perf_counter()
         if self.DataCol == 'Yes':
-            pyautogui.alert(text=f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think', title=f'{(toc - tic)//60} minutes maybe')
+            pyg.alert(text=f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think', title=f'{(toc - tic)//60} minutes maybe')
         print(f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think {(toc - tic)//60} minutes maybe')
 
         while True:
@@ -207,7 +192,7 @@ class ClickerProcess(Process):
             ready = True
             while ready:
                 time.sleep(15)
-                if pyautogui.locateOnScreen("coin to collect.png", confidence=0.6) is not None or pyautogui.locateOnScreen("Supply collect.png", confidence=0.6) is not None:
+                if pyg.locateOnScreen("coin to collect.png", confidence=0.6) is not None or pyg.locateOnScreen("Supply collect.png", confidence=0.6) is not None:
                     ready = False
 
             timeLoop += 1
