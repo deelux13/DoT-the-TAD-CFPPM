@@ -59,7 +59,7 @@ class Interface():
         # TODO i think i might need to add something here...
 
     def __enter__(self):
-        pass
+        return self
 
 
 

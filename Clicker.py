@@ -24,30 +24,32 @@ class Brains(Process):
 
     def __init__(self, ThreadHandler):
         super(Brains, self).__init__()
+        # This is because it needs to initialize the Process class
 
         self.keyQueue = ThreadHandler.keyQueue
         pyg.PAUSE = 0
 
-    def UBQask(self):
 
+    def UBQask(self):
+        """just asks if/how many UBQs"""
         self.UBQtodo = 0
         test = True
 
         while test:
             ubqs = pyg.prompt(text='How many UBQs?')
             if ubqs is None:
-                test = False
-                break
+                return
             try:
-                self.UBQtodo = int(ubqs)
+                self.UBQtotal = int(ubqs)
                 test = False
             except ValueError:
                 pyg.alert(text="Not a number")
 
         self.UBQgivers = int(pyg.confirm(text='How many quest givers?',buttons=['1', '2', '3']))
+        
 
 
-    def Hood(self):
+    def HoodAsk(self):
         """"Pull yes/no for hood aid and populate aidtab list"""
         pyg.alert(text='Hood will not be aided')
         self.tabs = ["Guild", "Friend"]
@@ -56,10 +58,96 @@ class Brains(Process):
         # not sure how to add hood option, don't want it to accidentally trigger for DoT
 
 
-    def data(self):
+    def datalogAsk(self):
         self.DataCol = pyg.confirm(text='Do UBQ timing? aid is currently skipped if this is chosen', buttons=["Yes", "No"])
 
-    def AidClickAll(self, image, confidence=0.9):
+
+    def UBQmode(self):
+        if self.Face.State() != "UBQ ready to go":
+            self.Face.UBQsetup()
+        
+        
+
+
+
+    def run(self):
+
+        self.HoodAsk()
+        
+        self.UBQask()
+        self.datalogAsk()
+        print("Clicker process run")
+        pyg.alert("Starting")
+        self.Face = GameInterface.Interface()
+        tic = time.perf_counter()
+        timeLoop = 0
+        self.totalUBQ = self.UBQtodo #the wrong way to handle this. setting the objective one to the value of the one that changes.
+        try:
+            self.UBQmode()
+        except ErrorLZ.LZException:
+            print("something went wrong in UBQ")
+
+
+        # should make this be the not found error but didn't go dig to find it
+
+        # runs however many ubqs were told in __INIT__
+        toc = time.perf_counter()
+        if self.DataCol == 'Yes':
+            pyg.alert(text=f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think', title=f'{(toc - tic)//60} minutes maybe')
+        print(f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think {(toc - tic)//60} minutes maybe')
+
+        while True:
+            self.Collect()
+            if timeLoop % 13 == 0:
+                try:
+                    self.Aid()
+                except ErrorLZ.LZException:
+                    timeLoop -= 1
+
+
+            ready = True
+            while ready:
+                time.sleep(15)
+                if pyg.locateOnScreen("coin to collect.png", confidence=0.6) is not None or pyg.locateOnScreen("Supply collect.png", confidence=0.6) is not None:
+                    ready = False
+
+            timeLoop += 1
+            time.sleep(15)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+
+
+
+
+def AidClickAll(self, image, confidence=0.9):
         """Clicking routine for the Aid method."""
         thing = pyg.locateOnScreen(image, confidence=confidence)
         if thing is None:
@@ -154,46 +242,4 @@ class Brains(Process):
             i += 1
 
     
-
-
-    def run(self):
-
-        self.Hood()
-        self.UBQask()
-        self.data()
-        print("Clicker process run")
-        pyg.alert("Starting")
-        tic = time.perf_counter()
-        timeLoop = 0
-        self.totalUBQ = self.UBQtodo #the wrong way to handle this. setting the objective one to the value of the one that changes.
-        try:
-            self.UBQ()
-        except ErrorLZ.LZException:
-            print("something went wrong in UBQ")
-
-
-        # should make this be the not found error but didn't go dig to find it
-
-        # runs however many ubqs were told in __INIT__
-        toc = time.perf_counter()
-        if self.DataCol == 'Yes':
-            pyg.alert(text=f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think', title=f'{(toc - tic)//60} minutes maybe')
-        print(f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think {(toc - tic)//60} minutes maybe')
-
-        while True:
-            self.Collect()
-            if timeLoop % 13 == 0:
-                try:
-                    self.Aid()
-                except ErrorLZ.LZException:
-                    timeLoop -= 1
-
-
-            ready = True
-            while ready:
-                time.sleep(15)
-                if pyg.locateOnScreen("coin to collect.png", confidence=0.6) is not None or pyg.locateOnScreen("Supply collect.png", confidence=0.6) is not None:
-                    ready = False
-
-            timeLoop += 1
-            time.sleep(15)
+'''
