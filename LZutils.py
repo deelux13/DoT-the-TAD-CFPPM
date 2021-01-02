@@ -28,6 +28,11 @@ def OverlapDetect(first, second, refImg):
         return False
 
 
+def waitfor(img, confidence=0.8):
+    while pyautogui.locateOnScreen(img, confidence=confidence) is None:
+        time.sleep(0.08)
+    return
+
 
 def findAllList(file, confidence=0.92):
     """Find All, no overlap detection only safe with first and last.
