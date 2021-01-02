@@ -12,12 +12,13 @@ if __name__ == "__main__":
     multiprocessing.freeze_support()
     print(getcwd())
     
-    with THd.Threader() as thd:
+    with THd.ThreadHandler() as thd:
         print("in with")
         Process = Brain.Brains(thd)
         print("clicker initiated in with")
-        thd.Trigger(Process)
+        thd.addProcess(Process)
         while True:
             time.sleep(400)
 
 
+            
