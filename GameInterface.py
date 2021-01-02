@@ -65,6 +65,7 @@ class Interface():
 
 
     def UBQmode(self, number,  givers):
+        print("in ubq mode")
         if number < 0 :
             infinite = True
         if number == 0 :
@@ -74,8 +75,33 @@ class Interface():
         time.sleep(1)
         self.UBQsetup(givers) # should set it up.
         center = pyg.locateCenterOnScreen(self.abortImg, confidence=0.7)
+        List = self.BufferLocations("Abort button.png")
+        if len(List) < 1:
+            time.sleep(1)
+            return False
+        button = List[len(List) - 1]
+        reg = (button[0] - 100, button[1] - 300, 300, 700)
         while (number + 1)/(done + 1) - 1 > 0:
             # TODO this still needs help.... idk what i'm doing.
+            questNum = 0
+            while questNum < 7:
+                if self.ClickBottomAbort(reg):
+                    questNum +=1
+            
+            LZutils.waitfor(self.payImg)
+            LZutils.FindGoClickAll(self.payImg)
+            LZutils.waitfor(self.collect)
+            LZutils.FindGoClickAll(self.collect, confidence=0.8)
+            try:
+               # print('tried')
+                LZutils.findClick(self.closeImg)
+                pyg.moveTo(center)
+            except ErrorLZ.LZException:
+                pass
+
+            if done % 7 == 0:
+                print(f'{done} of {number} still left to do {time.asctime( time.localtime(time.time()) )}.')
+            done +=1
 
 
 
@@ -179,18 +205,18 @@ class Interface():
             
 
 # watchpay had to be added so it didn't abort too early befor the pay button was visible. especially becasuse the abort is oddly slow and triggers early. 
-    def ClickBottomAbort(self, watchPay=True):
+    def ClickBottomAbort(self, reg):
         """Literally just click the bottom abort, handles scrolling and all.
         
         This is rather slow. 
 
         Assumes that quest panel is open, cuz you dumb if you call this with
         it closed."""
-        xSafe = self.topLeftX + 150
-        yMid = self.topLeftY + 300
-       # print(self.topLeftY, "top offset")
-        xAbort = int(self.topLeftX) + 270
-        pyg.moveTo(xSafe, yMid, 0.3)
+       #  xSafe = self.topLeftX + 150
+       #  yMid = self.topLeftY + 300
+       # # print(self.topLeftY, "top offset")
+       #  xAbort = int(self.topLeftX) + 270
+       #  pyg.moveTo(xSafe, yMid, 0.3)
         # scroll does weird things
         # ij = 0
         # while ij < 5:
@@ -198,26 +224,24 @@ class Interface():
         #     pyg.scroll(-20)
         
         # Scroll down so that the bottom abort is visible.
-        if pyg.locateOnScreen('Pay button.png', confidence=0.9) and watchPay:
-            return False
-        clicked = False
+        # if pyg.locateOnScreen('Pay button.png', confidence=0.9) and watchPay:
+        #     return False
+        # clicked = False
         #really not sure what i'm doing.
         # i think this just passes back false if the abort hasn't loaded  yet.
-        List = self.BufferLocations("Abort button.png")
-        if len(List) < 1:
-            time.sleep(1)
-            return False
-        button = List[len(List) - 1]
+        
         # len - 1 give index of last on list
-
-        center = pyg.center(button) + (0,5) # this offset totally doesn't work.
+        
+        # center = pyg.center(button) + (0,5) # this offset totally doesn't work.
       #  print(center)
-        reg = (button[0] - 100, button[1] - 300, 300, 700)
+        center = pyg.locateCenterOnScreen("Abort button.png", confidence=0.8, region=reg)
+        if center is None:
+            return False
         LZutils.goClick(center)
         time.sleep(0.2)
         while not pyg.locateOnScreen("Abort button.png", confidence=0.85, region=reg):
-            time.sleep(0.2)
-        time.sleep(1)
+            time.sleep(0.05)
+        
         return True
 
 # feels like iffy copypasta
