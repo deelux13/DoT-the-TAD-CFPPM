@@ -36,7 +36,7 @@ class ThreadHandler():
         self.Running[0] = 1
 
         self.Listener = Interrupt(self)
-        self.Listener.run()
+        
         print("listener started")
         # in _init so that errors don't kill it as hard?.. also only need one listener.
 
@@ -66,6 +66,7 @@ class ThreadHandler():
         Process.start()
         print('Process started')
         self.Processes.append(Process)
+        self.Listener.run()
 
     def stop(self):
         self.__exit__("Stopped by self.Stop()", "fake", "fake")
@@ -107,7 +108,8 @@ class Interrupt(Process):
 
     def keyUp(self, key):
         print(key)
-        self.Processer.keyQueue.put(key)
+        #self.Processer.keyQueue.put(key)
+        # #### TODO QUEUE?
         # pyautogui.move(100,100)
         # if key == Key.enter:
         #     pyautogui.alert(text='running, enter was pressed')
@@ -125,6 +127,7 @@ class Interrupt(Process):
         print("Interrupt Start Listen()")
 
         with Listener(on_release=self.keyUp) as self.listener:
+            
             self.listener.join()
         self.Running = True
         print('hellp')
