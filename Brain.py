@@ -39,6 +39,7 @@ class Brains(Process):
         self.UBQinfinite = pyg.confirm(text='Do you want UBQs indefinitely? select No to choose a number', buttons=["Yes", "No"])
         if self.UBQinfinite == "Yes":
             self.UBQtotal = -1
+            return
         while test:
             ubqs = pyg.prompt(text='How many UBQs?')
             if ubqs is None:
@@ -79,19 +80,19 @@ class Brains(Process):
         self.datalogAsk()
         print("Clicker process run")
         pyg.alert("Starting")
-        self.Face = GameInterface.Interface()
+        self.Face = GameInterface.Interface(self)
         tic = time.perf_counter()
         
-        
+        print('ubq mode?')
         self.Face.UBQmode(self.UBQtotal, self.UBQgivers)
-
+        print("after UBQ mode")
         # should make this be the not found error but didn't go dig to find it
 
         # runs however many ubqs were told in __INIT__
         toc = time.perf_counter()
         if self.DataCol == 'Yes':
-            pyg.alert(text=f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think', title=f'{(toc - tic)//60} minutes maybe')
-        print(f'{self.totalUBQ} UBQs took {toc - tic:0.4f} seconds i think {(toc - tic)//60} minutes maybe')
+            pyg.alert(text=f'{self.UBQtotal} UBQs took {toc - tic:0.4f} seconds i think', title=f'{(toc - tic)//60} minutes maybe')
+        print(f'{self.UBQtotal} UBQs took {toc - tic:0.4f} seconds i think {(toc - tic)//60} minutes maybe')
 
         self.Face.CollectMode()
         
