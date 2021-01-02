@@ -180,6 +180,17 @@ def addTuples(first, second):
     return tuple(map(sum, zip(first, second)))
 
 
+def scroll(direction):
+    '''
+    scroll 
+    direction is 1 or -1
+    '''
+    nm = 0 
+    while nm < 7:
+        pyautogui.scroll(direction * 10) # these scrolls may break it
+        nm += 1
+
+
 def FindGoCollectAll(image, confidence=0.8):
     thing = pyautogui.locateOnScreen(image, confidence=confidence)
     if thing is None:

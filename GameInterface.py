@@ -70,9 +70,12 @@ class Interface():
         if number == 0 :
             print("none to do, 0 requested")
             return
+        done = 0
+        time.sleep(1)
         self.UBQsetup(givers) # should set it up.
         center = pyg.locateCenterOnScreen(self.abortImg, confidence=0.7)
-        
+        while (number + 1)/(done + 1) - 1 > 0:
+            # TODO this still needs help.... idk what i'm doing.
 
 
 
@@ -87,10 +90,7 @@ class Interface():
         print("post UBQ setup")
         while self.UBQtodo > 0:
             time.sleep(0.5)
-            nm = 0 
-            while nm < 7:
-                pyg.scroll(-10) # these scrolls may break it
-                nm += 1
+            LZutils.scroll(-1)
                 #safety scroll
 
             if LZutils.FindGoClickAll(self.payImg):
