@@ -81,7 +81,7 @@ class Interface():
             return False
         button = List[len(List) - 1]
         reg = (button[0] - 100, button[1] - 300, 300, 700)
-        while (number + 1)/(done + 1) - 1 > 0:
+        while done / number < 1:
             # TODO this still needs help.... idk what i'm doing.
             questNum = 0
             while questNum < 7:
@@ -94,6 +94,7 @@ class Interface():
             LZutils.FindGoClickAll(self.collect, confidence=0.8)
             try:
                # print('tried')
+                time.sleep(0.1)
                 LZutils.findClick(self.closeImg)
                 pyg.moveTo(center)
             except ErrorLZ.LZException:
