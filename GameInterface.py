@@ -94,7 +94,7 @@ class Interface():
             LZutils.FindGoClickAll(self.collect, confidence=0.8)
             try:
                # print('tried')
-                time.sleep(0.1)
+                time.sleep(0.2)
                 LZutils.findClick(self.closeImg)
                 pyg.moveTo(center)
             except ErrorLZ.LZException:
