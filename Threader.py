@@ -107,7 +107,7 @@ class Interrupt(Process):
         self.Processer = Processer
 
     def keyUp(self, key):
-        print(key)
+        #### print(key)
         #self.Processer.keyQueue.put(key)
         # #### TODO QUEUE?
         # pyautogui.move(100,100)
