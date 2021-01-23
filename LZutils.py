@@ -29,8 +29,16 @@ def OverlapDetect(first, second, refImg):
 
 
 def waitfor(img, confidence=0.8):
+    counter = 0
     while pyautogui.locateOnScreen(img, confidence=confidence) is None:
-        time.sleep(0.08)
+        time.sleep(0.1)
+        counter += 1
+        if counter > 250:
+            try:
+                findClick("Abort button.png", confidence=0.9)
+                time.sleep(2.4)
+            except ErrorLZ.LZException:
+                pass
     return
 
 

@@ -44,6 +44,7 @@ class Interface():
         self.coinQuestImg = "Coin quest identify.png"
         self.UBQexitImg = 'UBQ exit button.png'
         self.closeImg = "Close button.png"
+        self.BlueReward = "blueprint quest reward.png"
         
         self.collections = [self.coinImg, self.coinStarImg,
                             self.suppliesImg, self.suppliesStarImg]
@@ -74,6 +75,7 @@ class Interface():
         done = 0
         time.sleep(1)
         self.UBQsetup(givers) # should set it up.
+        tic = time.perf_counter()
         center = pyg.locateCenterOnScreen(self.abortImg, confidence=0.7)
         List = self.BufferLocations("Abort button.png")
         if len(List) < 1:
@@ -91,18 +93,21 @@ class Interface():
             LZutils.waitfor(self.payImg)
             LZutils.FindGoClickAll(self.payImg)
             LZutils.waitfor(self.collect)
-            LZutils.FindGoClickAll(self.collect, confidence=0.8)
-            try:
-               # print('tried')
-                time.sleep(0.2)
+            if pyg.locateOnScreen(self.BlueReward, confidence=0.8) is not None:
+                LZutils.FindGoClickAll(self.collect, confidence=0.8)
+                LZutils.waitfor(self.closeImg)
                 LZutils.findClick(self.closeImg)
                 pyg.moveTo(center)
-            except ErrorLZ.LZException:
-                pass
+            else:
+                LZutils.FindGoClickAll(self.collect, confidence=0.8)
+            
+            
 
             if done % 7 == 0:
-                print(f'{done} of {number} still left to do {time.asctime( time.localtime(time.time()) )}.')
+                toc = time.perf_counter()
+                print(f'{done} of {number} still left to do {time.asctime( time.localtime(time.time()) )} || {(toc - tic)//60} minutes maybe.')
             done +=1
+            LZutils.waitfor(self.abortImg)
 
 
 
@@ -241,8 +246,8 @@ class Interface():
         LZutils.goClick(center)
         time.sleep(0.2)
         while not pyg.locateOnScreen("Abort button.png", confidence=0.85, region=reg):
-            time.sleep(0.05)
-        
+            time.sleep(0.1)
+        time.sleep(0.05)
         return True
 
 # feels like iffy copypasta
