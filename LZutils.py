@@ -33,12 +33,12 @@ def waitfor(img, confidence=0.8):
     while pyautogui.locateOnScreen(img, confidence=confidence) is None:
         time.sleep(0.1)
         counter += 1
-        if counter > 250:
+        if counter > 20:
             try:
                 findClick("Abort button.png", confidence=0.9)
-                time.sleep(2.4)
+                time.sleep(1)
             except ErrorLZ.LZException:
-                pass
+                time.sleep(4)
     return
 
 
