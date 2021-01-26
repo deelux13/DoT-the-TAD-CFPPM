@@ -36,7 +36,7 @@ def waitfor(img, confidence=0.8):
         if counter > 20:
             try:
                 findClick("Abort button.png", confidence=0.9)
-                time.sleep(1)
+                time.sleep(3)
             except ErrorLZ.LZException:
                 time.sleep(4)
     return
