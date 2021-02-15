@@ -28,10 +28,10 @@ def OverlapDetect(first, second, refImg):
         return False
 
 
-def waitfor(img, confidence=0.8):
+def waitfor(img, region, confidence=0.7):
     counter = 0
-    while pyautogui.locateOnScreen(img, confidence=confidence) is None:
-        time.sleep(0.1)
+    while pyautogui.locateOnScreen(img, minSearchTime=0.05, confidence=confidence, region=region) is None:
+        time.sleep(0.03)
         counter += 1
         if counter > 20:
             try:
@@ -41,6 +41,14 @@ def waitfor(img, confidence=0.8):
                 time.sleep(4)
     return
 
+def waitforVanish(img, region, confidence=0.8):
+    counter = 0
+    while pyautogui.locateOnScreen(img, confidence=confidence, region=region):
+        time.sleep(0.03)
+        counter += 1
+        if counter > 60:
+            return False
+    return
 
 def findAllList(file, confidence=0.92):
     """Find All, no overlap detection only safe with first and last.
@@ -175,7 +183,7 @@ class building():
     pass
 
 
-def FindGoClickAll(image, confidence=0.9, delay=0.1):
+def FindGoClickAll(image, confidence=0.9, delay=0.1, region=pyautogui.size()):
     thing = pyautogui.locateOnScreen(image, confidence=confidence)
     if thing is None:
         return False
@@ -250,7 +258,7 @@ def findClick(image, confidence=.9, offset=(0,0)):
 def goClick(pos):
     """takes location tuple"""
 
-    pyautogui.moveTo(pos, None, 0.3, pyautogui.easeInOutQuad)
+    pyautogui.moveTo(pos, None, 0.001, pyautogui.easeInOutQuad)
     # time.sleep(.3)
     #this is inconsisten idk if sleep helps
 

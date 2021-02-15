@@ -57,6 +57,9 @@ class Interface():
         self.aidBoardTopY = pyg.locateOnScreen("left edge of player aid board.png", confidence=0.9)[1]
         if self.topLeftX > 30:
             pyg.alert("You really should maximize the screen...")
+        print(pyg.PAUSE, "this is pyg default pause")
+        self.screenReg = (0, 0, pyg.size()[0] -1, pyg.size()[1] - 1)
+        pyg.PAUSE = 0
         # TODO i think i might need to add something here...
 
     def __enter__(self):
@@ -75,27 +78,31 @@ class Interface():
         done = 0
         time.sleep(1)
         self.UBQsetup(givers) # should set it up.
-        tic = time.perf_counter()
+        self.tic = time.perf_counter()
         center = pyg.locateCenterOnScreen(self.abortImg, confidence=0.7)
         List = self.BufferLocations("Abort button.png")
         if len(List) < 1:
             time.sleep(1)
             return False
         button = List[len(List) - 1]
-        reg = (button[0] - 100, button[1] - 300, 300, 700)
+        reg = (button[0] - 100, button[1] - 200, 600, 300)
         while done / number < 1:
             # TODO this still needs help.... idk what i'm doing.
             questNum = 0
             while questNum < 7:
+                LZutils.waitfor("Abort button.png", region=reg)
                 if self.ClickBottomAbort(reg):
                     questNum +=1
+                    #print(self.tic - time.perf_counter(), "pre wait")
+                    #LZutils.waitfor("Abort button.png")
+                    
             
-            LZutils.waitfor(self.payImg)
-            LZutils.FindGoClickAll(self.payImg)
-            LZutils.waitfor(self.collect)
-            if pyg.locateOnScreen(self.BlueReward, confidence=0.8) is not None:
+            LZutils.waitfor(self.payImg, region=reg)
+            LZutils.FindGoClickAll(self.payImg, region=reg)
+            LZutils.waitfor(self.collect, region=reg)
+            if pyg.locateOnScreen(self.BlueReward, confidence=0.8, region=reg):
                 LZutils.FindGoClickAll(self.collect, confidence=0.8)
-                LZutils.waitfor(self.closeImg)
+                LZutils.waitfor(self.closeImg, self.screenReg)
                 LZutils.findClick(self.closeImg)
                 pyg.moveTo(center)
             else:
@@ -105,9 +112,9 @@ class Interface():
 
             if done % 7 == 0:
                 toc = time.perf_counter()
-                print(f'{done} of {number} still left to do {time.asctime( time.localtime(time.time()) )} || {(toc - tic)//60} minutes maybe.')
+                print(f'{done} of {number} still left to do {time.asctime( time.localtime(time.time()) )} || {(toc - self.tic)//60} minutes maybe.')
             done +=1
-            LZutils.waitfor(self.abortImg)
+            LZutils.waitfor(self.abortImg, reg)
 
 
 
@@ -240,14 +247,12 @@ class Interface():
         
         # center = pyg.center(button) + (0,5) # this offset totally doesn't work.
       #  print(center)
+        #print(self.tic - time.perf_counter(), "pre click")
         center = pyg.locateCenterOnScreen("Abort button.png", confidence=0.8, region=reg)
         if center is None:
             return False
         LZutils.goClick(center)
-        time.sleep(0.2)
-        while not pyg.locateOnScreen("Abort button.png", confidence=0.85, region=reg):
-            time.sleep(0.1)
-        time.sleep(0.05)
+        LZutils.waitforVanish("Abort button.png", reg)
         return True
 
 # feels like iffy copypasta
