@@ -80,12 +80,23 @@ class Interface():
         self.UBQsetup(givers) # should set it up.
         self.tic = time.perf_counter()
         center = pyg.locateCenterOnScreen(self.abortImg, confidence=0.7)
+        Spots = self.BufferLocations("RQ banner.png")
         List = self.BufferLocations("Abort button.png")
         if len(List) < 1:
             time.sleep(1)
             return False
         button = List[len(List) - 1]
-        reg = (button[0] - 100, button[1] - 200, 600, 300)
+        print(Spots)
+        print(len(Spots))
+        print(Spots[0])
+        importantBanner = Spots[len(Spots) - 1]
+        Bookedge = pyg.locateCenterOnScreen("Questbook botton corner.png", confidence=0.8)
+        x = self.topLeftX
+        y = importantBanner[1]
+        width = Bookedge[0] - x
+        height= Bookedge[1] - y
+        reg = (x, y, width, height)
+        # this reg is pretty clean using the top left castle, the RQ banner, and the bottom corner of the "book"
         while done / number < 1:
             # TODO this still needs help.... idk what i'm doing.
             questNum = 0
@@ -193,7 +204,7 @@ class Interface():
 
     def BufferLocations(self, img):
         Img = Image.open(img)
-        gen = pyg.locateAllOnScreen(Img, confidence=0.9)
+        gen = pyg.locateAllOnScreen(Img, confidence=0.8)
         # need the size of the image to detect overlap
         Width, Height = Img.size
         List = []
