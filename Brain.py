@@ -70,21 +70,33 @@ class Brains(Process):
     file open()
     pickle.dump
     '''
+    def AutoRefreshAsk(self):
+        if pyg.prompt(text='Do you want autorefresh on? type "YES" only if you\'re want this to refresh') == 'YES':
+            self.refresh = "YES"
+        else:
+            self.refresh = 0
+
 
 
     def run(self):
         # TODO do the pickle preference thing
-        self.HoodAsk()
+        #self.HoodAsk()
         
         self.UBQask()
-        self.datalogAsk()
+        self.AutoRefreshAsk()
+        if self.UBQtotal > 0:
+            self.datalogAsk()
         print("Clicker process run")
         pyg.alert("Starting")
         self.Face = GameInterface.Interface(self)
         tic = time.perf_counter()
         
         print('ubq mode?')
-        self.Face.UBQmode(self.UBQtotal, self.UBQgivers)
+        while not self.Face.UBQmode(self.UBQtotal, self.UBQgivers):
+            time.sleep(1)
+            print("refesh thing")
+            if self.refresh:
+                self.Face.refresh()
         print("after UBQ mode")
         # should make this be the not found error but didn't go dig to find it
 

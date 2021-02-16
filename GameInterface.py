@@ -129,8 +129,16 @@ class Interface():
                 ColorI = self.clickSpots[questNum][1]
                 while not pyg.pixelMatchesColor(PointI[0], PointI[1], ColorI, tolerance=30):
                     wait += 1
-                    if wait > 500:
+                    if wait > 30:
+                        try:
+                            LZutils.findClick(self.closeImg)
+                        except ErrorLZ.LZException:
+                            pass
                         self.ClickBottomAbort(self.screenReg)
+                        if wait > 45:
+                            LZutils.FindGoClickAll(self.closeImg, confidence=0.8)
+                            LZutils.FindGoClickAll(self.UBQexitImg, confidence=0.7)
+                            return False
                     time.sleep(0.01)
                 pyg.click(PointI[0], PointI[1])
                 while pyg.pixelMatchesColor(PointI[0], PointI[1], ColorI, tolerance=15):
@@ -143,12 +151,14 @@ class Interface():
                     LZutils.findClick(self.closeImg)
                 except ErrorLZ.LZException:
                     pass
-            
+            if LZutils.FindGoClickAll(self.collect, confidence=.85):
+                self.UBQsetup(givers)
+                self.UBQslow()
             if done % 7 == 0:
                 toc = time.perf_counter()
                 print(f'{done} of {number} still left to do {time.asctime( time.localtime(time.time()) )} || {(toc - self.tic)//60} minutes maybe.')
             done +=1
-            
+        return True    
 
 
 
@@ -274,7 +284,7 @@ class Interface():
         
         center = pyg.center(button) + (0,5) 
         LZutils.goClick(center)
-        time.sleep(1)
+        time.sleep(3)
         # this offset totally doesn't work.
       #  print(center)
         #print(self.tic - time.perf_counter(), "pre click")
@@ -385,6 +395,11 @@ class Interface():
         """
         # print("starting setup, {} givers".format(self.UBQgivers))
         LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))
+        time.sleep(0.1)
+        LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))
+        time.sleep(0.1)
+        LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))
+        time.sleep(0.1)
         times = givers - 1
         spots = [self.supQuestImg, self.coinQuestImg]
         if times == 0:# one giver
@@ -474,3 +489,32 @@ class Interface():
 
 
             raise ErrorLZ.LZException("Two quests not found")
+
+
+
+
+    def refresh(self):
+        
+        time.sleep(5)
+        pyg.hotkey('ctrl', 'r')
+        time.sleep(10)
+        while not pyg.locateOnScreen(self.QuestOpenImg, confidence=0.75):
+            time.sleep(1)
+            try:
+                LZutils.findClick("FC birka button.png", confidence=0.7) # use findgoclickall cuz it doesn't throw error if button not found.
+                time.sleep(5)
+                continue
+            except ErrorLZ.LZException:
+                time.sleep(4)
+            try:
+                LZutils.findClick("play button.png", confidence=0.8)
+                time.sleep(4)
+                continue
+            except ErrorLZ.LZException:
+                time.sleep(4)
+            try:
+                LZutils.findClick("Birka button.png", confidence=0.8)
+                time.sleep(4)
+                continue
+            except ErrorLZ.LZException:
+                time.sleep(4)
