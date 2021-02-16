@@ -70,6 +70,7 @@ class Interface():
 
     def UBQmode(self, number,  givers):
         print("in ubq mode")
+        self.givers = givers
         if number < 0 :
             infinite = True
         if number == 0 :
@@ -77,8 +78,10 @@ class Interface():
             return
         done = 0
         time.sleep(1)
-        self.UBQsetup(givers) # should set it up.
-        self.tic = time.perf_counter()
+        self.clickSpots = []
+        self.clickTiming = []
+        self.UBQsetup(givers) # should set it up.but doesn't leave it at a specific point in cycle
+        
         center = pyg.locateCenterOnScreen(self.abortImg, confidence=0.7)
         Spots = self.BufferLocations("RQ banner.png")
         List = self.BufferLocations("Abort button.png")
@@ -86,117 +89,124 @@ class Interface():
             time.sleep(1)
             return False
         button = List[len(List) - 1]
-        print(Spots)
-        print(len(Spots))
-        print(Spots[0])
+        
         importantBanner = Spots[len(Spots) - 1]
-        Bookedge = pyg.locateCenterOnScreen("Questbook botton corner.png", confidence=0.8)
+        Bookedge = pyg.locateCenterOnScreen("Questbook bottom corner.png", confidence=0.97)
+        print(Bookedge)
         x = self.topLeftX
         y = importantBanner[1]
         width = Bookedge[0] - x
         height= Bookedge[1] - y
         reg = (x, y, width, height)
+        print(reg)
+        
+        #start doing things
+        self.UBQslow()
+        try:
+            LZutils.findClick(self.closeImg)
+        except ErrorLZ.LZException:
+            pass
+        
+        self.UBQfind(reg)
+        try:
+            LZutils.findClick(self.closeImg)
+        except ErrorLZ.LZException:
+            pass
+        
+        print(self.clickSpots)
+        midPT = (self.screenReg[0]//2, self.screenReg[1]//2)
+        cenBlueCheck = pyg.pixel(midPT[0], midPT[1])
+        cycleNum = len(self.clickSpots)  # 1 for indexing not cuz less than in the while
+        
+        self.tic = time.perf_counter()
         # this reg is pretty clean using the top left castle, the RQ banner, and the bottom corner of the "book"
         while done / number < 1:
             # TODO this still needs help.... idk what i'm doing.
             questNum = 0
-            while questNum < 7:
-                LZutils.waitfor("Abort button.png", region=reg)
-                if self.ClickBottomAbort(reg):
-                    questNum +=1
-                    #print(self.tic - time.perf_counter(), "pre wait")
-                    #LZutils.waitfor("Abort button.png")
-                    
+            while questNum < cycleNum:
+                wait = 0
+                PointI = self.clickSpots[questNum][0]
+                ColorI = self.clickSpots[questNum][1]
+                while not pyg.pixelMatchesColor(PointI[0], PointI[1], ColorI, tolerance=30):
+                    wait += 1
+                    if wait > 500:
+                        self.ClickBottomAbort(self.screenReg)
+                    time.sleep(0.01)
+                pyg.click(PointI[0], PointI[1])
+                while pyg.pixelMatchesColor(PointI[0], PointI[1], ColorI, tolerance=15):
+                    time.sleep(0.05)
+                questNum += 1
             
-            LZutils.waitfor(self.payImg, region=reg)
-            LZutils.FindGoClickAll(self.payImg, region=reg)
-            LZutils.waitfor(self.collect, region=reg)
-            if pyg.locateOnScreen(self.BlueReward, confidence=0.8, region=reg):
-                LZutils.FindGoClickAll(self.collect, confidence=0.8)
-                LZutils.waitfor(self.closeImg, self.screenReg)
-                LZutils.findClick(self.closeImg)
-                pyg.moveTo(center)
-            else:
-                LZutils.FindGoClickAll(self.collect, confidence=0.8)
+            time.sleep(0.05)
+            if pyg.pixelMatchesColor(midPT[0], midPT[1], cenBlueCheck, tolerance=20):
+                try:
+                    LZutils.findClick(self.closeImg)
+                except ErrorLZ.LZException:
+                    pass
             
-            
-
             if done % 7 == 0:
                 toc = time.perf_counter()
                 print(f'{done} of {number} still left to do {time.asctime( time.localtime(time.time()) )} || {(toc - self.tic)//60} minutes maybe.')
             done +=1
-            LZutils.waitfor(self.abortImg, reg)
+            
 
 
 
 
 ## I really could do only a region check if its a performance issue
 # seems like the FOE performance is the real hangup at least on ubu-dev
-    def UBQ(self):
-        time.sleep(1)
-        center = pyg.locateCenterOnScreen(self.abortImg, confidence=0.7)
-        print("pre UBQ setup")
-        self.UBQsetup()
-        print("post UBQ setup")
-        while self.UBQtodo > 0:
-            time.sleep(0.5)
-            LZutils.scroll(-1)
-                #safety scroll
+    def UBQslow(self):
+        while True:
+            time.sleep(3.5)
+            if pyg.locateOnScreen(self.collect, confidence=0.8):
+                if LZutils.FindGoClickAll(self.collect, region=self.screenReg) > 1:
+                    self.UBQsetup(self.givers)
+                    continue
+                return
+            if pyg.locateOnScreen(self.payImg, confidence=0.8):
+                LZutils.FindGoClickAll(self.payImg, region=self.screenReg)
+                continue
+            self.ClickBottomAbort(self.screenReg)
+            
+            
 
-            if LZutils.FindGoClickAll(self.payImg):
-                time.sleep(0.3)
-                i = 1
-                while i >= 0:
-                    # checks twice and scrolls
-                    found = LZutils.FindGoClickAll(self.collect,
-                                                   confidence=0.8)
-                    if found > i:
-                        time.sleep(0.3)
-                        self.UBQsetup()
-                        break
-                    # first collect expects one, any more triggers the setup
-                    # second scrolls up but expects none.
-                    try:
-                       # print('tried')
-                        LZutils.findClick(self.closeImg)
-                        pyg.moveTo(center)
-                    except ErrorLZ.LZException:
-                        pass
-                    finally:
-                        i -= 1
-                        j = 0
-                        while j < 5:
-                            pyg.scroll(10) # these scrolls may break it
-                            j += 1
-                        
-                        if self.UBQtodo % 7 == 0:
-                            print(f'{self.UBQtodo} of {self.totalUBQ} still left to do {time.asctime( time.localtime(time.time()) )}.')
-
-                self.UBQtodo -= 1
-                time.sleep(0.3)
-                nm = 0 
-                while nm < 7:
-                    pyg.scroll(-10) # these scrolls may break it
-                    nm += 1
+    def UBQfind(self, reg):
+        # could have a collect come in, but should be setup properly.
+        while True:
+            time.sleep(3.5)
+            if pyg.locateOnScreen(self.collect, region=reg, confidence=0.8):
+                if pyg.locateOnScreen("FP RQ reward.png", confidence=0.8):
+                    LZutils.findClick(self.collect)
+                    self.clickSpots = []
+                    continue
+                    # this is weird. but the collect button has like 10 pixel vertical shift and i make the pixel of interest 5 pixels lower, but the FP is the lowest so then it's too low.
+                buttonC = pyg.locateCenterOnScreen(self.collect, region=reg, confidence=0.8)
+                buttonC = (int(buttonC[0] - 30), int(buttonC[1]+5))
+                color = pyg.pixel(buttonC[0], buttonC[1])
+                print(color)
+                self.clickSpots.append([buttonC, color])
+                pyg.click(buttonC)
                 
-            else:
-
-                try:
-                    self.Face.ClickBottomAbort()
-                    # should click the bottom abort button
-                    # returns false if it doesn't click. but i don't care right now.
-
-                except ErrorLZ.LZException:
-                    pyg.alert(text='no abort found')
-                    continue
-                except OSError or TypeError:
-                    print("issues with UBQ finding abort button")
-
-                    continue
-        LZutils.findClick(self.UBQexitImg, confidence=0.8)
-
-
-
+                return
+            if pyg.locateOnScreen(self.payImg, region=reg, confidence=0.8):
+                buttonC = pyg.locateCenterOnScreen(self.payImg, region=reg, confidence=0.8)
+                buttonC = (int(buttonC[0]), int(buttonC[1]))
+                color = pyg.pixel(buttonC[0], buttonC[1])
+                print(color)
+                self.clickSpots.append([buttonC, color])
+                pyg.click(buttonC)
+                continue
+            if pyg.locateOnScreen(self.abortImg, region=reg, confidence=0.8):
+                buttonC = pyg.locateCenterOnScreen(self.abortImg, region=reg, confidence=0.8)
+                print(buttonC)
+                buttonC = (int(buttonC[0] - 30), int(buttonC[1]))
+                print(buttonC[0], " and ", buttonC[1])
+                color = pyg.pixel(buttonC[0], buttonC[1])
+                
+                self.clickSpots.append([buttonC, color])
+                pyg.click(buttonC)
+                continue
+            
 
 
 
@@ -236,16 +246,22 @@ class Interface():
 
         Assumes that quest panel is open, cuz you dumb if you call this with
         it closed."""
-       #  xSafe = self.topLeftX + 150
-       #  yMid = self.topLeftY + 300
+        xSafe = self.topLeftX + 150
+        yMid = self.topLeftY + 300
        # # print(self.topLeftY, "top offset")
-       #  xAbort = int(self.topLeftX) + 270
-       #  pyg.moveTo(xSafe, yMid, 0.3)
-        # scroll does weird things
-        # ij = 0
-        # while ij < 5:
-        #     ij += 1
-        #     pyg.scroll(-20)
+        xAbort = int(self.topLeftX) + 270
+        pyg.moveTo(xSafe, yMid, 0.3)
+       # scroll does weird things
+        ij = 0
+        while ij < 5:
+            ij += 1
+            pyg.scroll(-20)
+            
+        List = self.BufferLocations("Abort button.png")
+        if len(List) < 1:
+            time.sleep(1)
+            return False
+        button = List[len(List) - 1]
         
         # Scroll down so that the bottom abort is visible.
         # if pyg.locateOnScreen('Pay button.png', confidence=0.9) and watchPay:
@@ -256,9 +272,15 @@ class Interface():
         
         # len - 1 give index of last on list
         
-        # center = pyg.center(button) + (0,5) # this offset totally doesn't work.
+        center = pyg.center(button) + (0,5) 
+        LZutils.goClick(center)
+        time.sleep(1)
+        # this offset totally doesn't work.
       #  print(center)
         #print(self.tic - time.perf_counter(), "pre click")
+        
+        
+    def ClickAbortinReg(self, reg):
         center = pyg.locateCenterOnScreen("Abort button.png", confidence=0.8, region=reg)
         if center is None:
             return False
@@ -386,8 +408,9 @@ class Interface():
                 check = pyg.locateOnScreen(self.coinQuestImg, confidence=0.9)
                 # is the eone we are looking for on screen?
                 if check is None:
-                    self.Face.ClickTopAbort() # if not, then click abort
+                    self.ClickTopAbort() # if not, then click abort
                 time.sleep(0.3)
+                pyg.alert("found coin")
             # pyautogui.alert("coin found i think")
             if pyg.center(check)[1] > pyg.center(pyg.locateOnScreen(self.abortImg, confidence=0.95))[0]:
                 '''then the bottom RQ is one we want, and we just abort the top
