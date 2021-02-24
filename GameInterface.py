@@ -56,7 +56,7 @@ class Interface():
         self.topLeftY = self.topLeft[1]
         self.aidBoardTopY = pyg.locateOnScreen("left edge of player aid board.png", confidence=0.9)[1]
         if self.topLeftX > 30:
-            pyg.alert("You really should maximize the screen...")
+            print("You really should maximize the screen...")
         print(pyg.PAUSE, "this is pyg default pause")
         self.screenReg = (0, 0, pyg.size()[0] -1, pyg.size()[1] - 1)
         pyg.PAUSE = 0
@@ -127,7 +127,7 @@ class Interface():
                 wait = 0
                 PointI = self.clickSpots[questNum][0]
                 ColorI = self.clickSpots[questNum][1]
-                while not pyg.pixelMatchesColor(PointI[0], PointI[1], ColorI, tolerance=30):
+                while not pyg.pixelMatchesColor(PointI[0], PointI[1], ColorI, tolerance=35):
                     wait += 1
                     if wait > 30:
                         try:
@@ -141,9 +141,18 @@ class Interface():
                             return False
                     time.sleep(0.01)
                 pyg.click(PointI[0], PointI[1])
+                wait2 = 0
                 while pyg.pixelMatchesColor(PointI[0], PointI[1], ColorI, tolerance=15):
                     time.sleep(0.05)
+                    wait2 += 1
+                    if wait2 > 15:
+                        pyg.click(PointI[0], PointI[1])
+                    if wait2 > 45:
+                            LZutils.FindGoClickAll(self.closeImg, confidence=0.8)
+                            LZutils.FindGoClickAll(self.UBQexitImg, confidence=0.7)
+                            return False
                 questNum += 1
+                
             
             time.sleep(0.05)
             if pyg.pixelMatchesColor(midPT[0], midPT[1], cenBlueCheck, tolerance=20):
