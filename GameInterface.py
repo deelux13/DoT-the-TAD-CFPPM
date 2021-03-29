@@ -125,24 +125,43 @@ class Interface():
             questNum = 0
             while questNum < cycleNum:
                 wait = 0
+                
                 PointI = self.clickSpots[questNum][0]
                 ColorI = self.clickSpots[questNum][1]
+                time.sleep(0.1)
+                pyg.click(PointI[0] - 15, PointI[1] - 30)
                 while not pyg.pixelMatchesColor(PointI[0], PointI[1], ColorI, tolerance=35):
                     wait += 1
+                    if not pyg.pixelMatchesColor(midPT[0], midPT[1], cenBlueCheck, tolerance=10):
+                        try:
+                            print("try bp close")
+                            LZutils.findClick(self.closeImg, confidence=0.8)
+                        except ErrorLZ.LZException:
+                            print("close bp failed")
+                    if wait == 30:
+                        pyg.click(PointI[0], PointI[1])
+                        print("aimless click to close bp")
                     if wait > 30:
                         try:
                             LZutils.findClick(self.closeImg)
+                            continue
                         except ErrorLZ.LZException:
                             pass
                         self.ClickBottomAbort(self.screenReg)
-                        if wait > 45:
-                            LZutils.FindGoClickAll(self.closeImg, confidence=0.8)
-                            LZutils.FindGoClickAll(self.UBQexitImg, confidence=0.7)
+                        print(wait)
+                        time.sleep(1)
+                        if wait > 52:
+                            
+                            try:
+                                LZutils.findClick(self.UBQexitImg, confidence=0.7)
+                            except ErrorLZ.LZException:
+                                pass
+                                
                             return False
                     time.sleep(0.01)
                 pyg.click(PointI[0], PointI[1])
                 wait2 = 0
-                while pyg.pixelMatchesColor(PointI[0], PointI[1], ColorI, tolerance=15):
+                while pyg.pixelMatchesColor(PointI[0], PointI[1], ColorI, tolerance=35):
                     time.sleep(0.05)
                     wait2 += 1
                     if wait2 > 15:
@@ -155,13 +174,14 @@ class Interface():
                 
             
             time.sleep(0.05)
-            if pyg.pixelMatchesColor(midPT[0], midPT[1], cenBlueCheck, tolerance=20):
+            if not pyg.pixelMatchesColor(midPT[0], midPT[1], cenBlueCheck, tolerance=20):
                 try:
                     LZutils.findClick(self.closeImg)
                 except ErrorLZ.LZException:
                     pass
             if LZutils.FindGoClickAll(self.collect, confidence=.85):
                 self.UBQsetup(givers)
+                print("extra collect ")
                 self.UBQslow()
             if done % 7 == 0:
                 toc = time.perf_counter()
@@ -175,14 +195,17 @@ class Interface():
 ## I really could do only a region check if its a performance issue
 # seems like the FOE performance is the real hangup at least on ubu-dev
     def UBQslow(self):
+        print("slow started")
         while True:
             time.sleep(3.5)
             if pyg.locateOnScreen(self.collect, confidence=0.8):
                 if LZutils.FindGoClickAll(self.collect, region=self.screenReg) > 1:
+                    # TODO do i need to add blueprint protection?
                     self.UBQsetup(self.givers)
                     continue
                 return
-            if pyg.locateOnScreen(self.payImg, confidence=0.8):
+            if pyg.locateOnScreen(self.payImg, confidence=0.7):
+                print("slow pay found")
                 LZutils.FindGoClickAll(self.payImg, region=self.screenReg)
                 continue
             self.ClickBottomAbort(self.screenReg)
@@ -403,6 +426,7 @@ class Interface():
 
         """
         # print("starting setup, {} givers".format(self.UBQgivers))
+        pyg.click(pyg.locateOnScreen(self.QuestOpenImg, confidence=0.65, grayscale=True))
         LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))
         time.sleep(0.1)
         LZutils.findClick(self.QuestOpenImg, 0.6, (0, -5))

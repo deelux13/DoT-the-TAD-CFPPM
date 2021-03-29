@@ -26,3 +26,4 @@ if __name__ == "__main__":
 
 
 
+# I'm looking for people to help supply me with BA goods, i'm willing to trade you 2 IA goods for every bronze age good any of your choice, and put 10 FP on one of your GBs for every 50 BA goods, or help you get new GBs like ARC or Chateau. let me know if you're interested. 
